@@ -1,6 +1,7 @@
 package local
 
 import (
+	"context"
 	"go-tech-task/internal/domain"
 
 	"errors"
@@ -14,11 +15,11 @@ func NewBooksLocalStorage(books []domain.Book) *BooksLocalStorage {
 	return &BooksLocalStorage{books: books}
 }
 
-func (l *BooksLocalStorage) GetBooks() ([]domain.Book, error) {
+func (l *BooksLocalStorage) GetBooks(ctx context.Context) ([]domain.Book, error) {
 	return l.books, nil
 }
 
-func (l *BooksLocalStorage) GetBookById(id int64) (domain.Book, error) {
+func (l *BooksLocalStorage) GetBookById(ctx context.Context, id int64) (domain.Book, error) {
 	for _, value := range l.books {
 		if value.ID == id {
 			return value, nil
@@ -27,12 +28,12 @@ func (l *BooksLocalStorage) GetBookById(id int64) (domain.Book, error) {
 	return domain.Book{}, errors.New("No such id")
 }
 
-func (l *BooksLocalStorage) AddBooks(book domain.Book) int64 {
+func (l *BooksLocalStorage) AddBooks(ctx context.Context, book domain.Book) int64 {
 	l.books = append(l.books, book)
 	return book.ID
 }
 
-func (l *BooksLocalStorage) DeleteBook(id int64) (int64, error) {
+func (l *BooksLocalStorage) DeleteBook(ctx context.Context, id int64) (int64, error) {
 	var bookId int64 = -1
 	var bookIndex int64 = -1
 
@@ -52,7 +53,7 @@ func (l *BooksLocalStorage) DeleteBook(id int64) (int64, error) {
 	return bookId, nil
 }
 
-func (l *BooksLocalStorage) UpdateBook(id int64, book domain.Book) (int64, error) {
+func (l *BooksLocalStorage) UpdateBook(ctx context.Context, id int64, book domain.Book) (int64, error) {
 	for i := 0; i < len(l.books); i++ {
 		if l.books[i].ID == id {
 			if book.Year != "" {
