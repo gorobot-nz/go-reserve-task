@@ -63,7 +63,8 @@ func (l *LocalBook) UpdateBook(id int64, book domain.Book) (int64, error) {
 			if book.Title != ""{
 				l.books[i].Title = book.Title
 			}
+			return id, nil
 		}
 	}
-	return id, nil
+	return 0, errors.New("No such id")
 }
