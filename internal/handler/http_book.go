@@ -63,5 +63,23 @@ func (h *Handler) DeleteBook(context *gin.Context) {
 }
 
 func (h *Handler) UpdateBook(context *gin.Context) {
+	bookId, _ := strconv.ParseInt(context.Param("id"), 0, 64)
 
+	var book domain.Book
+
+	if err:= context.BindJSON(&book); err != nil {
+		context.JSON(http.StatusBadRequest,err.Error())
+		return
+	}
+
+	id, err := h.usecase.Book.UpdateBook(bookId, book)
+
+	if err != nil{
+		context.JSON(http.StatusBadRequest,err.Error())
+		return
+	}
+
+	context.JSON(http.StatusOK, map[string] interface{}{
+		"bookId": id,
+	})
 }

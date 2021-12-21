@@ -51,6 +51,19 @@ func (l *LocalBook) DeleteBook(id int64) (int64, error) {
 	return bookId, nil
 }
 
-func (l *LocalBook) UpdateBook(id int64) (int64, error) {
-	panic("implement me")
+func (l *LocalBook) UpdateBook(id int64, book domain.Book) (int64, error) {
+	for i:=0; i < len(l.books); i++{
+		if l.books[i].ID == id{
+			if book.Year != ""{
+				l.books[i].Year = book.Year
+			}
+			if len(book.Authors) != 0{
+				l.books[i].Authors = book.Authors
+			}
+			if book.Title != ""{
+				l.books[i].Title = book.Title
+			}
+		}
+	}
+	return id, nil
 }
