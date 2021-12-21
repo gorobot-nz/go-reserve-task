@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"go-tech-task/internal/domain"
+	"go-tech-task/internal/repository"
 )
 
 type Book interface {
@@ -14,5 +15,9 @@ type Book interface {
 
 type Usecase struct {
 	Book
+}
+
+func NewUsecase(repository *repository.Repository) *Usecase {
+	return &Usecase{Book: NewBookUsecase(repository)}
 }
 
