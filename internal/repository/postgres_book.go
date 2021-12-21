@@ -1,6 +1,9 @@
 package repository
 
-import "go-tech-task/internal/domain"
+import (
+	"errors"
+	"go-tech-task/internal/domain"
+)
 
 type LocalBook struct {
 	books []domain.Book
@@ -15,7 +18,12 @@ func (l LocalBook) GetBooks() ([]domain.Book, error) {
 }
 
 func (l LocalBook) GetBookById(id int64) (domain.Book, error) {
-	panic("implement me")
+	for _, value := range l.books{
+		if value.ID == id{
+			return value, nil
+		}
+	}
+	return domain.Book{}, errors.New("No such id")
 }
 
 func (l LocalBook) AddBooks(book *domain.Book) int64 {

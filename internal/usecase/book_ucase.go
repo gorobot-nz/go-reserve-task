@@ -18,7 +18,7 @@ func (b BookUsecase) GetBooks() ([]domain.Book, error) {
 }
 
 func (b BookUsecase) GetBookById(id int64) (domain.Book, error) {
-	panic("implement me")
+	return b.repository.GetBookById(id)
 }
 
 func (b BookUsecase) AddBooks(book *domain.Book) int64 {
