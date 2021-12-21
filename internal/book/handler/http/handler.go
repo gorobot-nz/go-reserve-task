@@ -19,7 +19,7 @@ func NewHandler(useCase book.UseCase) *Handler {
 }
 
 func (h *Handler) GetBooks(context *gin.Context) {
-	books, err := h.useCase.GetBooks(context.Request.Context(), )
+	books, err := h.useCase.GetBooks(context.Request.Context())
 
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, err.Error())
@@ -33,7 +33,7 @@ func (h *Handler) GetBooks(context *gin.Context) {
 
 func (h *Handler) GetBookById(context *gin.Context) {
 	bookId, _ := strconv.ParseInt(context.Param("id"), 0, 64)
-	book, err := h.useCase.GetBookById(context.Request.Context(), bookId)
+	b, err := h.useCase.GetBookById(context.Request.Context(), bookId)
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, err.Error())
@@ -41,19 +41,19 @@ func (h *Handler) GetBookById(context *gin.Context) {
 	}
 
 	context.JSON(http.StatusOK, map[string]interface{}{
-		"book": book,
+		"book": b,
 	})
 }
 
 func (h *Handler) AddBooks(context *gin.Context) {
-	var book domain.Book
+	var b domain.Book
 
-	if err := context.BindJSON(&book); err != nil {
+	if err := context.BindJSON(&b); err != nil {
 		context.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
-	id := h.useCase.AddBooks(context.Request.Context(), book)
+	id := h.useCase.AddBooks(context.Request.Context(), b)
 	context.JSON(http.StatusOK, map[string]interface{}{
 		"bookId": id,
 	})
@@ -76,14 +76,14 @@ func (h *Handler) DeleteBook(context *gin.Context) {
 func (h *Handler) UpdateBook(context *gin.Context) {
 	bookId, _ := strconv.ParseInt(context.Param("id"), 0, 64)
 
-	var book domain.Book
+	var b domain.Book
 
-	if err := context.BindJSON(&book); err != nil {
+	if err := context.BindJSON(&b); err != nil {
 		context.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
-	id, err := h.useCase.UpdateBook(context.Request.Context(), bookId, book)
+	id, err := h.useCase.UpdateBook(context.Request.Context(), bookId, b)
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, err.Error())
