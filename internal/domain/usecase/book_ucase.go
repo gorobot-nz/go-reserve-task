@@ -2,7 +2,7 @@ package usecase
 
 import (
 	"go-tech-task/internal/domain"
-	"go-tech-task/internal/repository"
+	"go-tech-task/internal/domain/repository"
 )
 
 type BookUsecase struct {

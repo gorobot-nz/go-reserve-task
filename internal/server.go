@@ -3,9 +3,9 @@ package internal
 import (
 	"context"
 	"go-tech-task/internal/domain"
-	"go-tech-task/internal/handler"
-	"go-tech-task/internal/repository"
-	"go-tech-task/internal/usecase"
+	"go-tech-task/internal/domain/handler"
+	"go-tech-task/internal/domain/repository"
+	"go-tech-task/internal/domain/usecase"
 	"net/http"
 	"time"
 )

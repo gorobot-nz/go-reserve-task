@@ -2,7 +2,7 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
-	"go-tech-task/internal/usecase"
+	"go-tech-task/internal/domain/usecase"
 )
 
 type Handler struct {
