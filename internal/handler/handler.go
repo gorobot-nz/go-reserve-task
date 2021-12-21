@@ -1,13 +1,16 @@
 package handler
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"go-tech-task/internal/usecase"
+)
 
 type Handler struct {
-	
+	usecase *usecase.Usecase
 }
 
-func NewHandler() *Handler {
-	return &Handler{}
+func NewHandler(usecase *usecase.Usecase) *Handler {
+	return &Handler{usecase: usecase}
 }
 
 func (h *Handler)InitHandler() *gin.Engine{
