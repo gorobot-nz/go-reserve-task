@@ -1,8 +1,9 @@
 package local
 
 import (
-	"errors"
 	"go-tech-task/internal/domain"
+
+	"errors"
 )
 
 type BooksLocalStorage struct {

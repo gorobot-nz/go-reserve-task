@@ -1,19 +1,19 @@
 package server
 
 import (
-	"context"
 	"github.com/gin-gonic/gin"
-	"log"
-	"os"
-	"os/signal"
 
 	"go-tech-task/internal/book"
-
 	bookHTTP "go-tech-task/internal/book/handler/http"
 	localDB "go-tech-task/internal/book/repository/local"
 	bookUseCase "go-tech-task/internal/book/usecase"
 	"go-tech-task/internal/domain"
+
+	"context"
+	"log"
 	"net/http"
+	"os"
+	"os/signal"
 	"time"
 )
 
