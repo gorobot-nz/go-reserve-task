@@ -49,7 +49,17 @@ func (h *Handler) AddBooks(context *gin.Context) {
 }
 
 func (h *Handler) DeleteBook(context *gin.Context) {
+	bookId, _ := strconv.ParseInt(context.Param("id"), 0, 64)
+	id, err := h.usecase.Book.DeleteBook(bookId)
 
+	if err != nil{
+		context.JSON(http.StatusBadRequest,err.Error())
+		return
+	}
+
+	context.JSON(http.StatusOK, map[string] interface{}{
+		"bookId": id,
+	})
 }
 
 func (h *Handler) UpdateBook(context *gin.Context) {

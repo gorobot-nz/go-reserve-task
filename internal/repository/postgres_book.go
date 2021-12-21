@@ -2,7 +2,6 @@ package repository
 
 import (
 	"errors"
-	"fmt"
 	"go-tech-task/internal/domain"
 )
 
@@ -28,15 +27,28 @@ func (l *LocalBook) GetBookById(id int64) (domain.Book, error) {
 }
 
 func (l *LocalBook) AddBooks(book domain.Book) int64 {
-	fmt.Println(l.books)
-	fmt.Println(book)
 	l.books = append(l.books, book)
-	fmt.Println(l.books)
 	return book.ID
 }
 
 func (l *LocalBook) DeleteBook(id int64) (int64, error) {
-	panic("implement me")
+	var bookId int64 = -1
+	var bookIndex int64 = -1
+
+	for index, value := range l.books{
+		if value.ID == id {
+			bookIndex = int64(index)
+			bookId = value.ID
+			break
+		}
+	}
+
+	if bookId < 0{
+		return bookId, errors.New("No such id")
+	}
+
+	l.books = append(l.books[:bookIndex], l.books[bookIndex + 1:]...)
+	return bookId, nil
 }
 
 func (l *LocalBook) UpdateBook(id int64) (int64, error) {

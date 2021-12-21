@@ -26,7 +26,7 @@ func (b *BookUsecase) AddBooks(book domain.Book) int64 {
 }
 
 func (b *BookUsecase) DeleteBook(id int64) (int64, error) {
-	panic("implement me")
+	return b.repository.DeleteBook(id)
 }
 
 func (b *BookUsecase) UpdateBook(id int64) (int64, error) {
