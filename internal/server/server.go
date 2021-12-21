@@ -1,20 +1,29 @@
-package internal
+package server
 
 import (
 	"context"
+	"github.com/gin-gonic/gin"
+	"log"
+	"os"
+	"os/signal"
+
+	"go-tech-task/internal/book"
+
+	bookHTTP "go-tech-task/internal/book/handler/http"
+	localDB "go-tech-task/internal/book/repository/local"
+	bookUseCase "go-tech-task/internal/book/usecase"
 	"go-tech-task/internal/domain"
-	"go-tech-task/internal/domain/handler"
-	"go-tech-task/internal/domain/repository"
-	"go-tech-task/internal/domain/usecase"
 	"net/http"
 	"time"
 )
 
-type Server struct {
+type App struct {
 	server *http.Server
+
+	bookUC book.UseCase
 }
 
-func (s *Server) Run() error {
+func NewApp() *App {
 	localDb := []domain.Book{
 		{ID: 1, Title: "Fight Club", Authors: []string{"Palahniuc"}, Year: "1996"},
 		{ID: 2, Title: "Theoretical Physics Course", Authors: []string{"Landau", "Lifshitz"}, Year: "1954"},
@@ -26,20 +35,40 @@ func (s *Server) Run() error {
 		{ID: 8, Title: "Code: The Hidden Language of Computer Hardware and Software", Authors: []string{"Petzold"}, Year: "1999"},
 	}
 
-	repos := repository.NewRepository(localDb)
-	ucase := usecase.NewUsecase(repos)
-	h := handler.NewHandler(ucase)
+	bookRepo := localDB.NewBooksLocalStorage(localDb)
 
-	s.server = &http.Server{
+	return &App{
+		bookUC: bookUseCase.NewBookUseCase(bookRepo),
+	}
+}
+
+func (a *App) Run() error {
+
+	router := gin.Default()
+
+	bookHTTP.RegisterEndpoints(router, a.bookUC)
+
+	a.server = &http.Server{
 		Addr:           ":8000",
-		Handler: h.InitHandler(),
+		Handler:        router,
 		MaxHeaderBytes: 1 << 20,
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,
 	}
-	return s.server.ListenAndServe()
-}
 
-func (s *Server) Shutdown(ctx context.Context) error {
-	return s.server.Shutdown(ctx)
+	go func() {
+		if err := a.server.ListenAndServe(); err != nil {
+			log.Fatalf("Failed to listen and serve: %+v", err)
+		}
+	}()
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, os.Interrupt, os.Interrupt)
+
+	<-quit
+
+	ctx, shutdown := context.WithTimeout(context.Background(), 5*time.Second)
+
+	defer shutdown()
+	return a.server.Shutdown(ctx)
 }
