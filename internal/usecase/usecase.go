@@ -4,7 +4,7 @@ import (
 	"go-tech-task/internal/domain"
 )
 
-type BookUsecase interface {
+type Book interface {
 	GetBooks() ([]domain.Book, error)
 	GetBookById(id int64) (domain.Book, error)
 	AddBooks(book *domain.Book) int64
@@ -13,6 +13,6 @@ type BookUsecase interface {
 }
 
 type Usecase struct {
-	BookUsecase
+	Book
 }
 

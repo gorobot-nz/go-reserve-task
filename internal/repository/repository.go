@@ -2,7 +2,7 @@ package repository
 
 import "go-tech-task/internal/domain"
 
-type BookRepository interface {
+type Book interface {
 	GetBooks() ([]domain.Book, error)
 	GetBookById(id int64) (domain.Book, error)
 	AddBooks(book *domain.Book) int64
@@ -11,5 +11,5 @@ type BookRepository interface {
 }
 
 type Repository struct {
-	BookRepository
+	Book
 }
