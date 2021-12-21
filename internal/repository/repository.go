@@ -13,3 +13,7 @@ type Book interface {
 type Repository struct {
 	Book
 }
+
+func NewRepository(books []domain.Book) *Repository {
+	return &Repository{Book: NewLocalBook(books)}
+}
