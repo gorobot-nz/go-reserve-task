@@ -2,6 +2,7 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
+	"go-tech-task/internal/domain"
 	"net/http"
 	"strconv"
 )
@@ -34,7 +35,17 @@ func (h *Handler) GetBookById(context *gin.Context) {
 }
 
 func (h *Handler) AddBooks(context *gin.Context) {
+	var book domain.Book
 
+	if err:= context.BindJSON(&book); err != nil {
+		context.JSON(http.StatusBadRequest,err.Error())
+		return
+	}
+
+	id := h.usecase.Book.AddBooks(book)
+	context.JSON(http.StatusOK, map[string] interface{}{
+		"bookId": id,
+	})
 }
 
 func (h *Handler) DeleteBook(context *gin.Context) {
