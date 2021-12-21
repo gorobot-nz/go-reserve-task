@@ -11,7 +11,7 @@ func NewLocalBook(books []domain.Book) *LocalBook {
 }
 
 func (l LocalBook) GetBooks() ([]domain.Book, error) {
-	panic("implement me")
+	return l.books, nil
 }
 
 func (l LocalBook) GetBookById(id int64) (domain.Book, error) {

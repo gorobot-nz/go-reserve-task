@@ -12,18 +12,18 @@ import (
 func main() {
 
 	localDb := []domain.Book{
-		domain.Book{ID: 1, Title: "Fight Club", Authors: []string{"Palahniuc"}, Year: "1996"},
-		domain.Book{ID: 2, Title: "Theoretical Physics Course", Authors: []string{"Landau", "Lifshitz"}, Year: "1954"},
-		domain.Book{ID: 3, Title: "Reptiloids", Authors: []string{"Prokopenko"}, Year: "2015"},
-		domain.Book{ID: 4, Title: "Another reptiloids", Authors: []string{"Prokopenko, Chapman"}, Year: "2017"},
-		domain.Book{ID: 5, Title: "Once upon a time in Hollywood", Authors: []string{"Tarantino"}, Year: "2019"},
-		domain.Book{ID: 6, Title: "Computer architecture", Authors: []string{"Tanenbaum"}, Year: "1975"},
-		domain.Book{ID: 7, Title: "Making a compact hydrogen bomb in labor lessons", Authors: []string{"Makarenko"}, Year: "1960"},
-		domain.Book{ID: 8, Title: "Code: The Hidden Language of Computer Hardware and Software", Authors: []string{"Petzold"}, Year: "1999"},
+		{ID: 1, Title: "Fight Club", Authors: []string{"Palahniuc"}, Year: "1996"},
+		{ID: 2, Title: "Theoretical Physics Course", Authors: []string{"Landau", "Lifshitz"}, Year: "1954"},
+		{ID: 3, Title: "Reptiloids", Authors: []string{"Prokopenko"}, Year: "2015"},
+		{ID: 4, Title: "Another reptiloids", Authors: []string{"Prokopenko, Chapman"}, Year: "2017"},
+		{ID: 5, Title: "Once upon a time in Hollywood", Authors: []string{"Tarantino"}, Year: "2019"},
+		{ID: 6, Title: "Computer architecture", Authors: []string{"Tanenbaum"}, Year: "1975"},
+		{ID: 7, Title: "Making a compact hydrogen bomb in labor lessons", Authors: []string{"Makarenko"}, Year: "1960"},
+		{ID: 8, Title: "Code: The Hidden Language of Computer Hardware and Software", Authors: []string{"Petzold"}, Year: "1999"},
 	}
 
 	repos := repository.NewRepository(localDb)
-	ucase :=usecase.NewUsecase(repos)
+	ucase := usecase.NewUsecase(repos)
 	h := handler.NewHandler(ucase)
 
 	server := new(internal.Server)
