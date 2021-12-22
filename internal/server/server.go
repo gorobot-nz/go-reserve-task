@@ -2,9 +2,11 @@ package server
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
+	"github.com/spf13/viper"
+	"go-tech-task/internal/book/repository/postgres"
 
 	bookHTTP "go-tech-task/internal/book/handler/http"
-	localDB "go-tech-task/internal/book/repository/local"
 	bookUseCase "go-tech-task/internal/book/usecase"
 	"go-tech-task/internal/domain"
 
@@ -16,6 +18,12 @@ import (
 	"time"
 )
 
+func InitConfig() error {
+	viper.AddConfigPath("configs")
+	viper.SetConfigName("config")
+	return viper.ReadInConfig()
+}
+
 type App struct {
 	server *http.Server
 
@@ -23,18 +31,24 @@ type App struct {
 }
 
 func NewApp() *App {
-	localDb := []domain.Book{
-		{ID: 1, Title: "Fight Club", Authors: []string{"Palahniuc"}, Year: time.Date(2006, 1, 2, 15, 04, 05, 0, time.UTC)},
-		{ID: 2, Title: "Theoretical Physics Course", Authors: []string{"Landau", "Lifshitz"}, Year: time.Date(2008, 1, 2, 15, 04, 05, 0, time.UTC)},
-		{ID: 3, Title: "Reptiloids", Authors: []string{"Prokopenko"}, Year: time.Date(1995, 1, 2, 15, 04, 05, 0, time.UTC)},
-		{ID: 4, Title: "Another reptiloids", Authors: []string{"Prokopenko, Chapman"}, Year: time.Date(1998, 1, 2, 15, 04, 05, 0, time.UTC)},
-		{ID: 5, Title: "Once upon a time in Hollywood", Authors: []string{"Tarantino"}, Year: time.Date(2019, 1, 2, 15, 04, 05, 0, time.UTC)},
-		{ID: 6, Title: "Computer architecture", Authors: []string{"Tanenbaum"}, Year: time.Date(2020, 1, 2, 15, 04, 05, 0, time.UTC)},
-		{ID: 7, Title: "Making a compact hydrogen bomb in labor lessons", Authors: []string{"Makarenko"}, Year: time.Date(2001, 1, 2, 15, 04, 05, 0, time.UTC)},
-		{ID: 8, Title: "Code: The Hidden Language of Computer Hardware and Software", Authors: []string{"Petzold"}, Year: time.Date(2003, 1, 2, 15, 04, 05, 0, time.UTC)},
+	if err := InitConfig(); err != nil {
+		log.Fatalf("Config error: %s", err.Error())
 	}
 
-	bookRepo := localDB.NewBooksLocalStorage(localDb)
+	if err := godotenv.Load(); err != nil {
+		log.Fatalf("Env error: %s", err.Error())
+	}
+
+	config := postgres.Config{
+		Host:     os.Getenv("POSTGRES_HOST"),
+		Port:     viper.GetString("db.POSTGRES_DBPORT"),
+		Username: os.Getenv("POSTGRES_USER"),
+		Password: os.Getenv("POSTGRES_PASSWORD"),
+		DBName:   viper.GetString("db.POSTGRES_DBNAME"),
+		SSLMode:  viper.GetString("db.POSTGRES_SSLMODE"),
+	}
+
+	bookRepo := postgres.NewBooksPostgresStorage(config)
 
 	return &App{
 		bookUC: bookUseCase.NewBookUseCase(bookRepo),
