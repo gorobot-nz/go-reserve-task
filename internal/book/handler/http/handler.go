@@ -2,6 +2,7 @@ package http
 
 import (
 	"github.com/gin-gonic/gin"
+	"time"
 
 	"go-tech-task/internal/book"
 	"go-tech-task/internal/domain"
@@ -50,6 +51,13 @@ func (h *Handler) AddBooks(context *gin.Context) {
 
 	if err := context.BindJSON(&b); err != nil {
 		context.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	num, err := strconv.ParseInt(b.Year, 0, 64)
+
+	if err != nil || (num < 0 || num > int64(time.Now().Year())) {
+		context.JSON(http.StatusBadRequest, "Wrong year format")
 		return
 	}
 
