@@ -24,14 +24,14 @@ type App struct {
 
 func NewApp() *App {
 	localDb := []domain.Book{
-		{ID: 1, Title: "Fight Club", Authors: []string{"Palahniuc"}, Year: "1996"},
-		{ID: 2, Title: "Theoretical Physics Course", Authors: []string{"Landau", "Lifshitz"}, Year: "1954"},
-		{ID: 3, Title: "Reptiloids", Authors: []string{"Prokopenko"}, Year: "2015"},
-		{ID: 4, Title: "Another reptiloids", Authors: []string{"Prokopenko, Chapman"}, Year: "2017"},
-		{ID: 5, Title: "Once upon a time in Hollywood", Authors: []string{"Tarantino"}, Year: "2019"},
-		{ID: 6, Title: "Computer architecture", Authors: []string{"Tanenbaum"}, Year: "1975"},
-		{ID: 7, Title: "Making a compact hydrogen bomb in labor lessons", Authors: []string{"Makarenko"}, Year: "1960"},
-		{ID: 8, Title: "Code: The Hidden Language of Computer Hardware and Software", Authors: []string{"Petzold"}, Year: "1999"},
+		{ID: 1, Title: "Fight Club", Authors: []string{"Palahniuc"}, Year: time.Date(2006, 1, 2, 15, 04, 05, 0, time.UTC)},
+		{ID: 2, Title: "Theoretical Physics Course", Authors: []string{"Landau", "Lifshitz"}, Year: time.Date(2008, 1, 2, 15, 04, 05, 0, time.UTC)},
+		{ID: 3, Title: "Reptiloids", Authors: []string{"Prokopenko"}, Year: time.Date(1995, 1, 2, 15, 04, 05, 0, time.UTC)},
+		{ID: 4, Title: "Another reptiloids", Authors: []string{"Prokopenko, Chapman"}, Year: time.Date(1998, 1, 2, 15, 04, 05, 0, time.UTC)},
+		{ID: 5, Title: "Once upon a time in Hollywood", Authors: []string{"Tarantino"}, Year: time.Date(2019, 1, 2, 15, 04, 05, 0, time.UTC)},
+		{ID: 6, Title: "Computer architecture", Authors: []string{"Tanenbaum"}, Year: time.Date(2020, 1, 2, 15, 04, 05, 0, time.UTC)},
+		{ID: 7, Title: "Making a compact hydrogen bomb in labor lessons", Authors: []string{"Makarenko"}, Year: time.Date(2001, 1, 2, 15, 04, 05, 0, time.UTC)},
+		{ID: 8, Title: "Code: The Hidden Language of Computer Hardware and Software", Authors: []string{"Petzold"}, Year: time.Date(2003, 1, 2, 15, 04, 05, 0, time.UTC)},
 	}
 
 	bookRepo := localDB.NewBooksLocalStorage(localDb)

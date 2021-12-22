@@ -2,11 +2,8 @@ package local
 
 import (
 	"context"
-	"go-tech-task/internal/domain"
-	"strconv"
-	"time"
-
 	"errors"
+	"go-tech-task/internal/domain"
 )
 
 type BooksLocalStorage struct {
@@ -86,12 +83,6 @@ func Validation(book *domain.Book) error {
 		if value == "" {
 			return errors.New("Wrong author format")
 		}
-	}
-
-	num, err := strconv.ParseInt(book.Year, 0, 64)
-
-	if err != nil || (num < 0 || num > int64(time.Now().Year())) {
-		return errors.New("Wrong year format")
 	}
 
 	return nil
