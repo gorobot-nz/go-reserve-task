@@ -33,6 +33,17 @@ func NewBooksPostgresStorage(cfg Config) *BooksPostgresStorage {
 	if err != nil {
 		log.Fatalf("DBConnection error: %s", err.Error())
 	}
+
+	var schema = `
+	CREATE TABLE IF NOT EXISTS books(
+		id serial PRIMARY KEY NOT NULL UNIQUE,
+		title varchar(255) NOT NULL,
+		authors varchar(255)[],
+		book_year timestamp 
+	)
+	`
+	db.MustExec(schema)
+
 	return &BooksPostgresStorage{conn: db}
 }
 
