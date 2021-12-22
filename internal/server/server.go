@@ -3,7 +3,6 @@ package server
 import (
 	"github.com/gin-gonic/gin"
 
-	"go-tech-task/internal/book"
 	bookHTTP "go-tech-task/internal/book/handler/http"
 	localDB "go-tech-task/internal/book/repository/local"
 	bookUseCase "go-tech-task/internal/book/usecase"
@@ -20,7 +19,7 @@ import (
 type App struct {
 	server *http.Server
 
-	bookUC book.UseCase
+	bookUC domain.BookUseCase
 }
 
 func NewApp() *App {

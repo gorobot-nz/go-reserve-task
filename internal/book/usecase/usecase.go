@@ -2,15 +2,14 @@ package usecase
 
 import (
 	"context"
-	"go-tech-task/internal/book"
 	"go-tech-task/internal/domain"
 )
 
 type BookUseCase struct {
-	repository book.Repository
+	repository domain.BookRepository
 }
 
-func NewBookUseCase(bookRepo book.Repository) *BookUseCase {
+func NewBookUseCase(bookRepo domain.BookRepository) *BookUseCase {
 	return &BookUseCase{repository: bookRepo}
 }
 

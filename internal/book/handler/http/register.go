@@ -2,11 +2,10 @@ package http
 
 import (
 	"github.com/gin-gonic/gin"
-
-	"go-tech-task/internal/book"
+	"go-tech-task/internal/domain"
 )
 
-func RegisterEndpoints(router *gin.Engine, useCase book.UseCase){
+func RegisterEndpoints(router *gin.Engine, useCase domain.BookUseCase){
 	h := NewHandler(useCase)
 	books := router.Group("/books")
 	{

@@ -2,7 +2,6 @@ package http
 
 import (
 	"github.com/gin-gonic/gin"
-	"go-tech-task/internal/book"
 	"go-tech-task/internal/domain"
 
 	"net/http"
@@ -10,10 +9,10 @@ import (
 )
 
 type Handler struct {
-	useCase book.UseCase
+	useCase domain.BookUseCase
 }
 
-func NewHandler(useCase book.UseCase) *Handler {
+func NewHandler(useCase domain.BookUseCase) *Handler {
 	return &Handler{useCase: useCase}
 }
 
