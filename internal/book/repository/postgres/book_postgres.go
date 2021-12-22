@@ -1,0 +1,61 @@
+package postgres
+
+import (
+	"context"
+	"fmt"
+	"github.com/jmoiron/sqlx"
+	"go-tech-task/internal/domain"
+	"log"
+)
+
+type Config struct {
+	Host     string
+	Port     string
+	Username string
+	Password string
+	DBName   string
+	SSLMode  string
+}
+
+type BooksPostgresStorage struct {
+	conn *sqlx.DB
+}
+
+func NewBooksPostgresStorage(cfg Config) *BooksPostgresStorage {
+	db, err := sqlx.Open("postgres", fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=%s",
+		cfg.Host, cfg.Port, cfg.Username, cfg.DBName, cfg.Password, cfg.SSLMode))
+	if err != nil {
+		log.Fatalf("DBConnection error: %s", err.Error())
+	}
+
+	err = db.Ping()
+	if err != nil {
+		log.Fatalf("DBConnection error: %s", err.Error())
+	}
+	return &BooksPostgresStorage{conn: db}
+}
+
+func (b *BooksPostgresStorage) GetBooks(ctx context.Context) ([]domain.Book, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (b *BooksPostgresStorage) GetBookById(ctx context.Context, id int64) (domain.Book, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (b *BooksPostgresStorage) AddBooks(ctx context.Context, book domain.Book) (int64, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (b *BooksPostgresStorage) DeleteBook(ctx context.Context, id int64) (int64, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (b *BooksPostgresStorage) UpdateBook(ctx context.Context, id int64, book domain.Book) (int64, error) {
+	//TODO implement me
+	panic("implement me")
+}
