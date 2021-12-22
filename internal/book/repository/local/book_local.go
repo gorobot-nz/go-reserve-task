@@ -3,6 +3,8 @@ package local
 import (
 	"context"
 	"go-tech-task/internal/domain"
+	"strconv"
+	"time"
 
 	"errors"
 )
@@ -28,9 +30,26 @@ func (l *BooksLocalStorage) GetBookById(ctx context.Context, id int64) (domain.B
 	return domain.Book{}, errors.New("No such id")
 }
 
-func (l *BooksLocalStorage) AddBooks(ctx context.Context, book domain.Book) int64 {
+func (l *BooksLocalStorage) AddBooks(ctx context.Context, book domain.Book) (int64, error) {
+
+	if len(book.Authors) == 0 {
+		return 0, errors.New("Wrong author format")
+	}
+
+	for _, value := range book.Authors{
+		if value == "" {
+			return 0, errors.New("Wrong author format")
+		}
+	}
+
+	num, err := strconv.ParseInt(book.Year, 0, 64)
+
+	if err != nil || (num < 0 || num > int64(time.Now().Year())) {
+		return 0, errors.New("Wrong year format")
+	}
+
 	l.books = append(l.books, book)
-	return book.ID
+	return book.ID, nil
 }
 
 func (l *BooksLocalStorage) DeleteBook(ctx context.Context, id int64) (int64, error) {

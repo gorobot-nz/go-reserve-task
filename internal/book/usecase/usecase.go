@@ -22,7 +22,7 @@ func (b *BookUseCase) GetBookById(ctx context.Context, id int64) (domain.Book, e
 	return b.repository.GetBookById(ctx, id)
 }
 
-func (b *BookUseCase) AddBooks(ctx context.Context, book domain.Book) int64 {
+func (b *BookUseCase) AddBooks(ctx context.Context, book domain.Book) (int64, error) {
 	return b.repository.AddBooks(ctx, book)
 }
 
