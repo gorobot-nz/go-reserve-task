@@ -32,20 +32,10 @@ func (l *BooksLocalStorage) GetBookById(ctx context.Context, id int64) (domain.B
 
 func (l *BooksLocalStorage) AddBooks(ctx context.Context, book domain.Book) (int64, error) {
 
-	if len(book.Authors) == 0 {
-		return 0, errors.New("Wrong author format")
-	}
+	err := Validation(&book)
 
-	for _, value := range book.Authors{
-		if value == "" {
-			return 0, errors.New("Wrong author format")
-		}
-	}
-
-	num, err := strconv.ParseInt(book.Year, 0, 64)
-
-	if err != nil || (num < 0 || num > int64(time.Now().Year())) {
-		return 0, errors.New("Wrong year format")
+	if err != nil{
+		return 0, err
 	}
 
 	l.books = append(l.books, book)
@@ -75,17 +65,34 @@ func (l *BooksLocalStorage) DeleteBook(ctx context.Context, id int64) (int64, er
 func (l *BooksLocalStorage) UpdateBook(ctx context.Context, id int64, book domain.Book) (int64, error) {
 	for i := 0; i < len(l.books); i++ {
 		if l.books[i].ID == id {
-			if book.Year != "" {
-				l.books[i].Year = book.Year
+			err := Validation(&l.books[i])
+			if err != nil{
+				return 0, err
 			}
-			if len(book.Authors) != 0 {
-				l.books[i].Authors = book.Authors
-			}
-			if book.Title != "" {
-				l.books[i].Title = book.Title
-			}
+			l.books[i] = book
+			l.books[i].ID = id
 			return id, nil
 		}
 	}
 	return 0, errors.New("No such id")
+}
+
+func Validation(book *domain.Book) error {
+	if len(book.Authors) == 0 {
+		return errors.New("Wrong author format")
+	}
+
+	for _, value := range book.Authors{
+		if value == "" {
+			return errors.New("Wrong author format")
+		}
+	}
+
+	num, err := strconv.ParseInt(book.Year, 0, 64)
+
+	if err != nil || (num < 0 || num > int64(time.Now().Year())) {
+		return errors.New("Wrong year format")
+	}
+
+	return nil
 }
