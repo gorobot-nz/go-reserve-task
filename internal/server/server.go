@@ -39,6 +39,18 @@ func NewApp() *App {
 		log.Fatalf("Env error: %s", err.Error())
 	}
 
+	if _, present := os.LookupEnv("POSTGRES_HOST"); !present {
+		log.Fatalf("No host env var")
+	}
+
+	if _, present := os.LookupEnv("POSTGRES_USER"); !present {
+		log.Fatalf("No user env var")
+	}
+
+	if _, present := os.LookupEnv("POSTGRES_PASSWORD"); !present {
+		log.Fatalf("No password env var")
+	}
+
 	config := postgres.Config{
 		Host:     os.Getenv("POSTGRES_HOST"),
 		Port:     viper.GetString("db.POSTGRES_DBPORT"),
@@ -62,7 +74,7 @@ func (a *App) Run() error {
 	bookHTTP.RegisterEndpoints(router, a.bookUC)
 
 	a.server = &http.Server{
-		Addr:           ":8000",
+		Addr:           ":" + viper.GetString("port"),
 		Handler:        router,
 		MaxHeaderBytes: 1 << 20,
 		ReadTimeout:    10 * time.Second,
