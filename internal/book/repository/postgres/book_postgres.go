@@ -89,6 +89,8 @@ func (b *BooksPostgresStorage) DeleteBook(ctx context.Context, id int64) (int64,
 }
 
 func (b *BooksPostgresStorage) UpdateBook(ctx context.Context, id int64, book domain.Book) (int64, error) {
-	//TODO implement me
-	panic("implement me")
+	date, _ := time.Parse(layout, book.Year)
+	query := fmt.Sprintf("UPDATE %s SET title = $1, authors = $2, book_year = $3 WHERE id = $4", "books")
+	_, err := b.conn.Exec(query, book.Title, book.Authors, date, id)
+	return id, err
 }
