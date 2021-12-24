@@ -7,6 +7,7 @@ import (
 	"github.com/lib/pq"
 	"go-tech-task/internal/domain"
 	"log"
+	"time"
 )
 
 type Config struct {
@@ -17,6 +18,8 @@ type Config struct {
 	DBName   string
 	SSLMode  string
 }
+
+const layout = "2006-01-02"
 
 type BooksPostgresStorage struct {
 	conn *sqlx.DB
@@ -59,8 +62,9 @@ func (b *BooksPostgresStorage) GetBookById(ctx context.Context, id int64) (domai
 
 func (b *BooksPostgresStorage) AddBooks(ctx context.Context, book domain.Book) (int64, error) {
 	var id int64
+	date, _ := time.Parse(layout, book.Year)
 	query := fmt.Sprintf("INSERT INTO %s (title, authors, book_year) values ($1, $2, $3) RETURNING id", "books")
-	row := b.conn.QueryRow(query, book.Title, pq.Array(book.Authors), pq.FormatTimestamp(book.Year))
+	row := b.conn.QueryRow(query, book.Title, pq.Array(book.Authors), date)
 	if err := row.Scan(&id); err != nil {
 		return 0, err
 	}
