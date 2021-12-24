@@ -6,7 +6,9 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/lib/pq"
 	"go-tech-task/internal/domain"
+	"io/ioutil"
 	"log"
+	"path/filepath"
 	"time"
 )
 
@@ -37,14 +39,14 @@ func NewBooksPostgresStorage(cfg Config) *BooksPostgresStorage {
 		log.Fatalf("DBConnection error: %s", err.Error())
 	}
 
-	var schema = `
-	CREATE TABLE IF NOT EXISTS books(
-		id serial PRIMARY KEY NOT NULL UNIQUE,
-		title varchar(255) NOT NULL,
-		authors varchar(255)[],
-		book_year timestamp 
-	)
-	`
+	path := filepath.Join(".", "internal", "schema", "book.sql")
+
+	c, ioErr := ioutil.ReadFile(path)
+	if ioErr != nil {
+		log.Fatalf("DBConnection error: %s", err.Error())
+	}
+
+	var schema = string(c)
 	db.MustExec(schema)
 
 	return &BooksPostgresStorage{conn: db}
