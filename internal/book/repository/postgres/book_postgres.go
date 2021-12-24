@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/jmoiron/sqlx"
-	"github.com/lib/pq"
 	"go-tech-task/internal/domain"
 	"io/ioutil"
 	"log"
@@ -53,8 +52,13 @@ func NewBooksPostgresStorage(cfg Config) *BooksPostgresStorage {
 }
 
 func (b *BooksPostgresStorage) GetBooks(ctx context.Context) ([]domain.Book, error) {
-	//TODO implement me
-	panic("implement me")
+	var books []domain.Book
+	query := fmt.Sprintf("SELECT id, title, authors, book_year FROM %s", "books")
+	err := b.conn.Select(&books, query)
+	if err != nil {
+		log.Fatalf(err.Error())
+	}
+	return books, nil
 }
 
 func (b *BooksPostgresStorage) GetBookById(ctx context.Context, id int64) (domain.Book, error) {
@@ -66,7 +70,7 @@ func (b *BooksPostgresStorage) AddBooks(ctx context.Context, book domain.Book) (
 	var id int64
 	date, _ := time.Parse(layout, book.Year)
 	query := fmt.Sprintf("INSERT INTO %s (title, authors, book_year) values ($1, $2, $3) RETURNING id", "books")
-	row := b.conn.QueryRow(query, book.Title, pq.Array(book.Authors), date)
+	row := b.conn.QueryRow(query, book.Title, book.Authors, date)
 	if err := row.Scan(&id); err != nil {
 		return 0, err
 	}

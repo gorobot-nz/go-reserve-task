@@ -2,13 +2,14 @@ package domain
 
 import (
 	"context"
+	"github.com/lib/pq"
 )
 
 type Book struct {
-	ID      int64    `json:"-" db:"id"`
-	Title   string   `json:"title" binding:"required" db:"title"`
-	Authors []string `json:"authors" binding:"required" db:"authors"`
-	Year    string   `json:"year" binding:"required" db:"book_year"`
+	ID      int64          `json:"id" db:"id"`
+	Title   string         `json:"title" binding:"required" db:"title"`
+	Authors pq.StringArray `json:"authors" binding:"required" db:"authors"`
+	Year    string         `json:"year" binding:"required" db:"book_year"`
 }
 
 type BookRepository interface {
