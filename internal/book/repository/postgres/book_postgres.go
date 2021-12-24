@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"go-tech-task/internal/domain"
@@ -66,14 +67,25 @@ func (b *BooksPostgresStorage) GetBookById(ctx context.Context, id int64) (domai
 	query := fmt.Sprintf("SELECT id, title, authors, book_year FROM %s WHERE id = $1", "books")
 	err := b.conn.Get(&book, query, id)
 	if err != nil {
-		log.Fatalf(err.Error())
+		return book, err
 	}
 	return book, nil
 }
 
 func (b *BooksPostgresStorage) AddBooks(ctx context.Context, book domain.Book) (int64, error) {
 	var id int64
-	date, _ := time.Parse(layout, book.Year)
+	date, err := time.Parse(layout, book.Year)
+
+	if err != nil {
+		return 0, err
+	}
+
+	err = Validation(&book)
+
+	if err != nil {
+		return 0, err
+	}
+
 	query := fmt.Sprintf("INSERT INTO %s (title, authors, book_year) values ($1, $2, $3) RETURNING id", "books")
 	row := b.conn.QueryRow(query, book.Title, book.Authors, date)
 	if err := row.Scan(&id); err != nil {
@@ -85,12 +97,45 @@ func (b *BooksPostgresStorage) AddBooks(ctx context.Context, book domain.Book) (
 func (b *BooksPostgresStorage) DeleteBook(ctx context.Context, id int64) (int64, error) {
 	query := fmt.Sprintf("DELETE FROM %s WHERE id = $1", "books")
 	_, err := b.conn.Exec(query, id)
-	return id, err
+	if err != nil {
+		return 0, err
+	}
+	return id, nil
 }
 
 func (b *BooksPostgresStorage) UpdateBook(ctx context.Context, id int64, book domain.Book) (int64, error) {
-	date, _ := time.Parse(layout, book.Year)
+	date, err := time.Parse(layout, book.Year)
+
+	if err != nil {
+		return 0, err
+	}
+
+	err = Validation(&book)
+
+	if err != nil {
+		return 0, err
+	}
+
 	query := fmt.Sprintf("UPDATE %s SET title = $1, authors = $2, book_year = $3 WHERE id = $4", "books")
-	_, err := b.conn.Exec(query, book.Title, book.Authors, date, id)
+	_, err = b.conn.Exec(query, book.Title, book.Authors, date, id)
+
+	if err != nil {
+		return 0, nil
+	}
+
 	return id, err
+}
+
+func Validation(book *domain.Book) error {
+	if len(book.Authors) == 0 {
+		return errors.New("Wrong author format")
+	}
+
+	for _, value := range book.Authors {
+		if value == "" {
+			return errors.New("Wrong author format")
+		}
+	}
+
+	return nil
 }
