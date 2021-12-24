@@ -2,14 +2,13 @@ package domain
 
 import (
 	"context"
-	"time"
 )
 
 type Book struct {
-	ID      int64    `json:"id" binding:"required"`
-	Title   string   `json:"title" binding:"required"`
-	Authors []string `json:"authors" binding:"required"`
-	Year    time.Time   `json:"year" binding:"required" time_format:"2006-01-02T15:04:05Z07:00"`
+	ID      int64    `json:"-" db:"id"`
+	Title   string   `json:"title" binding:"required" db:"title"`
+	Authors []string `json:"authors" binding:"required" db:"authors"`
+	Year    string   `json:"year" binding:"required" db:"book_year"`
 }
 
 type BookRepository interface {
