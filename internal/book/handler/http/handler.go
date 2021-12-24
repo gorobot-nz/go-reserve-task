@@ -39,7 +39,7 @@ func (h *Handler) GetBookById(context *gin.Context) {
 	}
 
 	context.JSON(http.StatusOK, map[string]interface{}{
-		"book": b,
+		"book": &b,
 	})
 }
 

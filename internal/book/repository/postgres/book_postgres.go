@@ -62,14 +62,14 @@ func (b *BooksPostgresStorage) GetBooks(ctx context.Context) ([]domain.Book, err
 	return books, nil
 }
 
-func (b *BooksPostgresStorage) GetBookById(ctx context.Context, id int64) (domain.Book, error) {
+func (b *BooksPostgresStorage) GetBookById(ctx context.Context, id int64) (*domain.Book, error) {
 	var book domain.Book
 	query := fmt.Sprintf("SELECT id, title, authors, book_year FROM %s WHERE id = $1", "books")
 	err := b.conn.Get(&book, query, id)
 	if err != nil {
-		return book, err
+		return nil, err
 	}
-	return book, nil
+	return &book, nil
 }
 
 func (b *BooksPostgresStorage) AddBooks(ctx context.Context, book domain.Book) (int64, error) {

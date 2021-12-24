@@ -18,20 +18,20 @@ func (l *BooksLocalStorage) GetBooks(ctx context.Context) ([]domain.Book, error)
 	return l.books, nil
 }
 
-func (l *BooksLocalStorage) GetBookById(ctx context.Context, id int64) (domain.Book, error) {
+func (l *BooksLocalStorage) GetBookById(ctx context.Context, id int64) (*domain.Book, error) {
 	for _, value := range l.books {
 		if value.ID == id {
-			return value, nil
+			return &value, nil
 		}
 	}
-	return domain.Book{}, errors.New("No such id")
+	return nil, errors.New("No such id")
 }
 
 func (l *BooksLocalStorage) AddBooks(ctx context.Context, book domain.Book) (int64, error) {
 
 	err := Validation(&book)
 
-	if err != nil{
+	if err != nil {
 		return 0, err
 	}
 
@@ -63,7 +63,7 @@ func (l *BooksLocalStorage) UpdateBook(ctx context.Context, id int64, book domai
 	for i := 0; i < len(l.books); i++ {
 		if l.books[i].ID == id {
 			err := Validation(&l.books[i])
-			if err != nil{
+			if err != nil {
 				return 0, err
 			}
 			l.books[i] = book
@@ -79,7 +79,7 @@ func Validation(book *domain.Book) error {
 		return errors.New("Wrong author format")
 	}
 
-	for _, value := range book.Authors{
+	for _, value := range book.Authors {
 		if value == "" {
 			return errors.New("Wrong author format")
 		}

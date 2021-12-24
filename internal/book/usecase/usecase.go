@@ -17,7 +17,7 @@ func (b *BookUseCase) GetBooks(ctx context.Context) ([]domain.Book, error) {
 	return b.repository.GetBooks(ctx)
 }
 
-func (b *BookUseCase) GetBookById(ctx context.Context, id int64) (domain.Book, error) {
+func (b *BookUseCase) GetBookById(ctx context.Context, id int64) (*domain.Book, error) {
 	return b.repository.GetBookById(ctx, id)
 }
 
