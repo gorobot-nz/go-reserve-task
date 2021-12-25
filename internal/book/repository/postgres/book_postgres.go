@@ -116,8 +116,8 @@ func (b *BooksPostgresStorage) UpdateBook(ctx context.Context, id int64, book do
 		return 0, err
 	}
 
-	query := fmt.Sprintf("UPDATE %s SET title = $1, authors = $2, book_year = $3 WHERE id = $4", "books")
-	_, err = b.conn.Exec(query, book.Title, book.Authors, date, id)
+	query := fmt.Sprintf("UPDATE %s SET title = $1, authors = $2, book_year = $3, updated_at = $4 WHERE id = $5", "books")
+	_, err = b.conn.Exec(query, book.Title, book.Authors, date, time.Now(), id)
 
 	if err != nil {
 		return 0, nil
