@@ -5,6 +5,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
 	"go-tech-task/internal/book/repository/postgres"
+	"strings"
 
 	bookHTTP "go-tech-task/internal/book/handler/http"
 	bookUseCase "go-tech-task/internal/book/usecase"
@@ -24,6 +25,20 @@ func InitConfig() error {
 	return viper.ReadInConfig()
 }
 
+func checkEnvVars() {
+	requiredEnvs := []string{"POSTGRES_HOST", "POSTGRES_USER", "POSTGRES_PASSWORD"}
+	var msg []string
+	for _, el := range requiredEnvs {
+		val, exists := os.LookupEnv(el)
+		if !exists || len(val) == 0 {
+			msg = append(msg, el)
+		}
+	}
+	if len(msg) > 0 {
+		log.Fatal(strings.Join(msg, ", "), " env(s) not set")
+	}
+}
+
 type App struct {
 	server *http.Server
 
@@ -39,17 +54,7 @@ func NewApp() *App {
 		log.Fatalf("Env error: %s", err.Error())
 	}
 
-	if _, present := os.LookupEnv("POSTGRES_HOST"); !present {
-		log.Fatalf("No host env var")
-	}
-
-	if _, present := os.LookupEnv("POSTGRES_USER"); !present {
-		log.Fatalf("No user env var")
-	}
-
-	if _, present := os.LookupEnv("POSTGRES_PASSWORD"); !present {
-		log.Fatalf("No password env var")
-	}
+	checkEnvVars()
 
 	config := postgres.Config{
 		Host:     os.Getenv("POSTGRES_HOST"),
