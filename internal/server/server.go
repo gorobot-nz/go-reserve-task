@@ -12,7 +12,7 @@ import (
 	"go-tech-task/internal/domain"
 
 	"context"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 	"os"
 	"os/signal"
