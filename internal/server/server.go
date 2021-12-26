@@ -1,13 +1,13 @@
 package server
 
 import (
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
-	"go-tech-task/internal/book/repository/postgres"
-	"strings"
 
 	bookHTTP "go-tech-task/internal/book/handler/http"
+	"go-tech-task/internal/book/repository/postgres"
 	bookUseCase "go-tech-task/internal/book/usecase"
 	"go-tech-task/internal/domain"
 
@@ -16,6 +16,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"time"
 )
 
@@ -77,6 +78,12 @@ func (a *App) Run() error {
 	router := gin.Default()
 
 	bookHTTP.RegisterEndpoints(router, a.bookUC)
+
+	router.Use(cors.New(cors.Config{
+		AllowOrigins: []string{"*"},
+		AllowMethods: []string{"GET", "POST", "DELETE", "PUT"},
+		AllowHeaders: []string{"Origin"},
+	}))
 
 	a.server = &http.Server{
 		Addr:           ":" + viper.GetString("port"),
