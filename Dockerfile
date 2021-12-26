@@ -1,18 +1,26 @@
-FROM golang:latest
+#Build stage
+FROM golang:latest AS builder
+
+WORKDIR /app
 
 RUN go version
 ENV GOPATH=/
 
 COPY ./ ./
 
-RUN apt-get update
-RUN apt-get -y install postgresql-client
-
-# make wait-for-postgres.sh executable
 RUN chmod +x wait-for-postgres.sh
 
-# build go app
 RUN go mod download
+RUN go mod tidy
 RUN go build -o go-tech-task ./cmd/api/main.go
 
-CMD ["./go-tech-task"]
+FROM alpine:latest
+
+WORKDIR /app
+
+COPY --from=builder ./app/wait-for-postgres.sh .
+COPY --from=builder ./app/go-tech-task .
+
+RUN apk --update add postgresql-client
+
+CMD ["./app/go-tech-task"]
