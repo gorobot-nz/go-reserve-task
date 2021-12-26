@@ -4,6 +4,7 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 
 	bookHTTP "go-tech-task/internal/book/handler/http"
@@ -12,7 +13,6 @@ import (
 	"go-tech-task/internal/domain"
 
 	"context"
-	log "github.com/sirupsen/logrus"
 	"net/http"
 	"os"
 	"os/signal"
@@ -83,6 +83,7 @@ func (a *App) Run() error {
 		AllowOrigins: []string{"*"},
 		AllowMethods: []string{"GET", "POST", "DELETE", "PUT"},
 		AllowHeaders: []string{"Origin"},
+		MaxAge:       12 * time.Hour,
 	}))
 
 	a.server = &http.Server{
