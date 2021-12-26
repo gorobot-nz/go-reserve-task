@@ -1,12 +1,12 @@
 #Build stage
 FROM golang:latest AS builder
-
-WORKDIR /app
+RUN mkdir -p /urs/src/app
+WORKDIR /urs/src/app
 
 RUN go version
 ENV GOPATH=/
 
-COPY ./ ./
+COPY . /urs/src/app
 
 RUN chmod +x wait-for-postgres.sh
 
@@ -16,11 +16,12 @@ RUN go build -o go-tech-task ./cmd/api/main.go
 
 FROM alpine:latest
 
-WORKDIR /app
+RUN mkdir -p /urs/src/app
+WORKDIR /urs/src/app
 
-COPY --from=builder ./app/wait-for-postgres.sh .
-COPY --from=builder ./app/go-tech-task .
+COPY --from=builder /urs/src/app/wait-for-postgres.sh /urs/src/app
+COPY --from=builder /urs/src/app/go-tech-task /urs/src/app
 
 RUN apk --update add postgresql-client
 
-CMD ["./app/go-tech-task"]
+CMD ["./go-tech-task"]

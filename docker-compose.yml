@@ -3,6 +3,7 @@ version: '3.8'
 services:
   go-tech-task:
     build: ./
+    #---------------------------------------------------------------------------
     command: ./wait-for-postgres.sh db ./go-tech-task
     ports:
       - 127.0.0.1:8000:8000
