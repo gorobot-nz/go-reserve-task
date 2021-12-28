@@ -29,7 +29,7 @@ func TestHandler_AddBooks(t *testing.T) {
 
 	var check bytes.Buffer
 
-	json.Unmarshal([]byte(`{"bookId":1}`), check)
+	json.Unmarshal([]byte(`{"bookId":1}`), &check)
 
 	uc.On("AddBooks", testBook).Return(testBook.ID, nil)
 
@@ -83,7 +83,7 @@ func TestHandler_DeleteBook(t *testing.T) {
 	RegisterEndpoints(r, uc)
 
 	var check bytes.Buffer
-	json.Unmarshal([]byte(`{"bookId":1}`), check)
+	json.Unmarshal([]byte(`{"bookId":1}`), &check)
 
 	uc.On("DeleteBook", int64(1)).Return(1, nil)
 
@@ -109,7 +109,7 @@ func TestHandler_UpdateBook(t *testing.T) {
 
 	var check bytes.Buffer
 
-	json.Unmarshal([]byte(`{"bookId":1}`), check)
+	json.Unmarshal([]byte(`{"bookId":1}`), &check)
 
 	uc.On("UpdateBook", int64(1), testBook).Return(testBook.ID, nil)
 
