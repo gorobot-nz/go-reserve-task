@@ -15,6 +15,7 @@ func TestBookUseCase_AddBooks(t *testing.T) {
 	uc := NewBookUseCase(rp)
 
 	testBook := domain.Book{
+		Title:   "Some title",
 		Authors: pq.StringArray{"First", "second"},
 		Year:    "2006-01-02",
 	}
@@ -62,9 +63,35 @@ func TestBookUseCase_GetBooks(t *testing.T) {
 }
 
 func TestBookUseCase_UpdateBook(t *testing.T) {
+	rp := new(mock.BooksPostgresStorageMock)
 
+	uc := NewBookUseCase(rp)
+
+	testBook := domain.Book{
+		Title:   "Some title",
+		Authors: pq.StringArray{"First", "second"},
+		Year:    "2006-01-02",
+	}
+	ctx := context.Background()
+	rp.On("UpdateBook", int64(1), testBook).Return(int64(1), nil)
+	result, err := uc.UpdateBook(ctx, int64(1), testBook)
+	assert.NoError(t, err)
+	assert.Equal(t, int64(1), result)
 }
 
 func TestBookUseCase_GetBookById(t *testing.T) {
+	book := domain.Book{
+		ID:      1,
+		Title:   "Check",
+		Authors: pq.StringArray{"Mr Bean"},
+		Year:    "1999-07-25T00:00:00Z",
+	}
+	rp := new(mock.BooksPostgresStorageMock)
+	uc := NewBookUseCase(rp)
+	ctx := context.Background()
+	rp.On("GetBookById", int64(1)).Return(&book, nil)
+	result, err := uc.GetBookById(ctx, int64(1))
+	assert.NoError(t, err)
+	assert.Equal(t, &book, result)
 
 }
