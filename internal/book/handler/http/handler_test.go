@@ -29,7 +29,7 @@ func TestHandler_AddBooks(t *testing.T) {
 
 	var check bytes.Buffer
 
-	json.Unmarshal([]byte(`{"bookId":1}`), &check)
+	json.Unmarshal([]byte(`{"bookId":1}`), check)
 
 	uc.On("AddBooks", testBook).Return(testBook.ID, nil)
 
@@ -82,17 +82,39 @@ func TestHandler_DeleteBook(t *testing.T) {
 	r := gin.Default()
 	RegisterEndpoints(r, uc)
 
-	var check *bytes.Buffer
-	json.Unmarshal([]byte(`{"bookId":1}`), &check)
+	var check bytes.Buffer
+	json.Unmarshal([]byte(`{"bookId":1}`), check)
 
 	uc.On("DeleteBook", int64(1)).Return(1, nil)
 
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("DELETE", "/books/1", nil)
 	r.ServeHTTP(w, req)
-	assert.Equal(t, check, w.Body)
+	assert.Equal(t, &check, w.Body)
 }
 
 func TestHandler_UpdateBook(t *testing.T) {
+	testBook := domain.Book{
+		Title:   "SomeTitle",
+		Authors: pq.StringArray{"First", "second"},
+		Year:    "2006-01-02",
+	}
 
+	uc := new(usecase.BookUseCaseMock)
+	r := gin.Default()
+	RegisterEndpoints(r, uc)
+
+	body, err := json.Marshal(testBook)
+	assert.NoError(t, err)
+
+	var check bytes.Buffer
+
+	json.Unmarshal([]byte(`{"bookId":1}`), check)
+
+	uc.On("UpdateBooks", testBook).Return(testBook.ID, nil)
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("PUT", "/books/1", bytes.NewBuffer(body))
+	r.ServeHTTP(w, req)
+	assert.Equal(t, &check, w.Body)
 }
