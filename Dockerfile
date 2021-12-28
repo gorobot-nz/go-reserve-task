@@ -21,4 +21,7 @@ RUN chmod +x wait-for-postgres.sh
 
 RUN apk --update add postgresql-client
 
+RUN useradd -u 8877 john
+USER john
+
 CMD ["./go-tech-task"]
