@@ -27,16 +27,16 @@ func TestHandler_AddBooks(t *testing.T) {
 	body, err := json.Marshal(testBook)
 	assert.NoError(t, err)
 
-	var check *bytes.Buffer
+	var check bytes.Buffer
 
 	json.Unmarshal([]byte(`{"bookId":1}`), &check)
 
-	uc.On("AddBooks", nil, testBook).Return(testBook.ID, nil)
+	uc.On("AddBooks", testBook).Return(testBook.ID, nil)
 
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("POST", "/books", bytes.NewBuffer(body))
 	r.ServeHTTP(w, req)
-	assert.Equal(t, check, w.Body)
+	assert.Equal(t, &check, w.Body)
 }
 
 func TestHandler_GetBooks(t *testing.T) {
@@ -62,15 +62,15 @@ func TestHandler_GetBooks(t *testing.T) {
 	booksJson, err := json.Marshal(books)
 	assert.NoError(t, err)
 
-	var check *bytes.Buffer
-	json.Unmarshal(booksJson, check)
+	var check bytes.Buffer
+	json.Unmarshal(booksJson, &check)
 
-	uc.On("GetBooks", nil).Return(books, nil)
+	uc.On("GetBooks").Return(books, nil)
 
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/books", nil)
 	r.ServeHTTP(w, req)
-	assert.Equal(t, check, w.Body)
+	assert.Equal(t, &check, w.Body)
 }
 
 func TestHandler_GetBookById(t *testing.T) {
@@ -78,7 +78,19 @@ func TestHandler_GetBookById(t *testing.T) {
 }
 
 func TestHandler_DeleteBook(t *testing.T) {
+	uc := new(usecase.BookUseCaseMock)
+	r := gin.Default()
+	RegisterEndpoints(r, uc)
 
+	var check *bytes.Buffer
+	json.Unmarshal([]byte(`{"bookId":1}`), &check)
+
+	uc.On("DeleteBook", int64(1)).Return(1, nil)
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("DELETE", "/books/1", nil)
+	r.ServeHTTP(w, req)
+	assert.Equal(t, check, w.Body)
 }
 
 func TestHandler_UpdateBook(t *testing.T) {
