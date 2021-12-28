@@ -111,7 +111,7 @@ func TestHandler_UpdateBook(t *testing.T) {
 
 	json.Unmarshal([]byte(`{"bookId":1}`), check)
 
-	uc.On("UpdateBooks", testBook).Return(testBook.ID, nil)
+	uc.On("UpdateBook", int64(1), testBook).Return(testBook.ID, nil)
 
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("PUT", "/books/1", bytes.NewBuffer(body))
