@@ -20,7 +20,9 @@ func (h *Handler) GetBooks(context *gin.Context) {
 	books, err := h.useCase.GetBooks(context.Request.Context())
 
 	if err != nil {
-		context.JSON(http.StatusInternalServerError, err.Error())
+		context.JSON(http.StatusInternalServerError, map[string]interface{}{
+			"error": err.Error(),
+		})
 		return
 	}
 
@@ -34,7 +36,9 @@ func (h *Handler) GetBookById(context *gin.Context) {
 	b, err := h.useCase.GetBookById(context.Request.Context(), bookId)
 
 	if err != nil {
-		context.JSON(http.StatusBadRequest, err.Error())
+		context.JSON(http.StatusBadRequest, map[string]interface{}{
+			"error": err.Error(),
+		})
 		return
 	}
 
@@ -47,14 +51,18 @@ func (h *Handler) AddBooks(context *gin.Context) {
 	var b domain.Book
 
 	if err := context.BindJSON(&b); err != nil {
-		context.JSON(http.StatusBadRequest, err.Error())
+		context.JSON(http.StatusBadRequest, map[string]interface{}{
+			"error": err.Error(),
+		})
 		return
 	}
 
 	id, err := h.useCase.AddBooks(context.Request.Context(), b)
 
 	if err != nil {
-		context.JSON(http.StatusBadRequest, err.Error())
+		context.JSON(http.StatusBadRequest, map[string]interface{}{
+			"error": err.Error(),
+		})
 		return
 	}
 
@@ -68,7 +76,9 @@ func (h *Handler) DeleteBook(context *gin.Context) {
 	id, err := h.useCase.DeleteBook(context.Request.Context(), bookId)
 
 	if err != nil {
-		context.JSON(http.StatusBadRequest, err.Error())
+		context.JSON(http.StatusBadRequest, map[string]interface{}{
+			"error": err.Error(),
+		})
 		return
 	}
 
@@ -83,14 +93,18 @@ func (h *Handler) UpdateBook(context *gin.Context) {
 	var b domain.Book
 
 	if err := context.BindJSON(&b); err != nil {
-		context.JSON(http.StatusBadRequest, err.Error())
+		context.JSON(http.StatusBadRequest, map[string]interface{}{
+			"error": err.Error(),
+		})
 		return
 	}
 
 	id, err := h.useCase.UpdateBook(context.Request.Context(), bookId, b)
 
 	if err != nil {
-		context.JSON(http.StatusBadRequest, err.Error())
+		context.JSON(http.StatusBadRequest, map[string]interface{}{
+			"error": err.Error(),
+		})
 		return
 	}
 
