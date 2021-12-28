@@ -54,23 +54,21 @@ func TestHandler_GetBooks(t *testing.T) {
 			Year:    "1999-07-25T00:00:00Z",
 		},
 	}
-
+	expected, err := json.Marshal(gin.H{
+		"books": books,
+	})
+	assert.NoError(t, err)
 	uc := new(usecase.BookUseCaseMock)
 	r := gin.Default()
 	RegisterEndpoints(r, uc)
 
-	booksJson, err := json.Marshal(books)
-	assert.NoError(t, err)
-
-	var check bytes.Buffer
-	json.Unmarshal(booksJson, &check)
-
 	uc.On("GetBooks").Return(books, nil)
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/books", nil)
+	req, _ := http.NewRequest("GET", "/books/", nil)
 	r.ServeHTTP(w, req)
-	assert.Equal(t, &check, w.Body)
+	actual := w.Body.Bytes()
+	assert.JSONEq(t, string(expected), string(actual))
 }
 
 func TestHandler_GetBookById(t *testing.T) {
