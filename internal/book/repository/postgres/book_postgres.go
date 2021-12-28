@@ -43,7 +43,7 @@ func NewBooksPostgresStorage(cfg Config) *BooksPostgresStorage {
 
 	c, ioErr := ioutil.ReadFile(path)
 	if ioErr != nil {
-		log.Fatalf("DBConnection error: %s", err.Error())
+		log.Fatalf("DBConnection error: %s", ioErr.Error())
 	}
 
 	var schema = string(c)

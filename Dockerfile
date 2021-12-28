@@ -1,27 +1,21 @@
-#Build stage
 FROM golang:latest
-RUN mkdir -p /urs/src/app
-WORKDIR /urs/src/app
 
-RUN go version
-ENV GOPATH=/
-
-COPY . .
-
-RUN go mod download
-RUN go mod tidy
-RUN go build -o go-tech-task ./cmd/api/main.go
+ENV PROJECT_REPO=github.com/gorobot-nz/go-reserve-task
+ENV APP_PATH=/go/src/${PROJECT_REPO}/
+WORKDIR ${APP_PATH}
+COPY . ${APP_PATH}
+RUN CGO_ENABLED=0 GOOS=linux go build -o app ./cmd/api/main.go
 
 FROM alpine:latest
-
-COPY --from=0 /urs/src/app/wait-for-postgres.sh .
-COPY --from=0 /urs/src/app/go-tech-task .
-
-RUN chmod +x wait-for-postgres.sh
-
-RUN apk --update add postgresql-client
-
-RUN useradd -u 8877 john
-USER john
-
-CMD ["./go-tech-task"]
+ENV PROJECT_REPO=github.com/gorobot-nz/go-reserve-task
+ENV APP_PATH=/go/src/${PROJECT_REPO}/
+RUN adduser -S nonrootuser
+WORKDIR ${APP_PATH}
+COPY --from=0 ${APP_PATH}/app ${APP_PATH}/app
+COPY --from=0 ${APP_PATH}/wait-for-postgres.sh ${APP_PATH}/wait-for-postgres.sh
+COPY --from=0 ${APP_PATH}/configs/config.yml ${APP_PATH}/configs/config.yml
+COPY --from=0 ${APP_PATH}/.env ${APP_PATH}/.env
+COPY --from=0 ${APP_PATH}/internal/schema/book.sql ${APP_PATH}/internal/schema/book.sql
+RUN chmod +x ${APP_PATH}/wait-for-postgres.sh
+USER nonrootuser
+CMD ["./app"]
