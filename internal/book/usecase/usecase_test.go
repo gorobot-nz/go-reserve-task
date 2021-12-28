@@ -37,7 +37,28 @@ func TestBookUseCase_DeleteBook(t *testing.T) {
 }
 
 func TestBookUseCase_GetBooks(t *testing.T) {
+	books := []domain.Book{
+		{
+			ID:      1,
+			Title:   "Check",
+			Authors: pq.StringArray{"Mr Bean"},
+			Year:    "1999-07-25T00:00:00Z",
+		},
+		{
+			ID:      2,
+			Title:   "Check",
+			Authors: pq.StringArray{"Mr Bean"},
+			Year:    "1999-07-25T00:00:00Z",
+		},
+	}
+	rp := new(mock.BooksPostgresStorageMock)
 
+	uc := NewBookUseCase(rp)
+
+	ctx := context.Background()
+	rp.On("GetBooks").Return(books, nil)
+	result, _ := uc.GetBooks(ctx)
+	assert.Equal(t, books, result)
 }
 
 func TestBookUseCase_UpdateBook(t *testing.T) {
