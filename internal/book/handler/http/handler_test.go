@@ -40,7 +40,37 @@ func TestHandler_AddBooks(t *testing.T) {
 }
 
 func TestHandler_GetBooks(t *testing.T) {
+	books := []domain.Book{
+		{
+			ID:      1,
+			Title:   "Check",
+			Authors: pq.StringArray{"Mr Bean"},
+			Year:    "1999-07-25T00:00:00Z",
+		},
+		{
+			ID:      2,
+			Title:   "Check",
+			Authors: pq.StringArray{"Mr Bean"},
+			Year:    "1999-07-25T00:00:00Z",
+		},
+	}
 
+	uc := new(usecase.BookUseCaseMock)
+	r := gin.Default()
+	RegisterEndpoints(r, uc)
+
+	booksJson, err := json.Marshal(books)
+	assert.NoError(t, err)
+
+	var check *bytes.Buffer
+	json.Unmarshal(booksJson, check)
+
+	uc.On("GetBooks", nil).Return(books, nil)
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/books", nil)
+	r.ServeHTTP(w, req)
+	assert.Equal(t, check, w.Body)
 }
 
 func TestHandler_GetBookById(t *testing.T) {
