@@ -4,7 +4,6 @@ services:
   go-tech-task:
     build: ./
     #---------------------------------------------------------------------------
-    command: ./wait-for-postgres.sh db ./go-tech-task
     ports:
       - 127.0.0.1:8000:8000
     depends_on:
@@ -17,8 +16,6 @@ services:
   db:
     restart: always
     image: postgres:latest
-    volumes:
-      - ./.database/postgres/data:/var/lib/postgresql/data
     environment:
       - POSTGRES_PASSWORD=qwerty
     ports:
