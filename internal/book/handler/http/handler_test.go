@@ -14,29 +14,30 @@ import (
 )
 
 func TestHandler_AddBooks(t *testing.T) {
-	testBook := domain.Book{
+	book := domain.Book{
+		ID:      1,
 		Title:   "SomeTitle",
 		Authors: pq.StringArray{"First", "second"},
 		Year:    "2006-01-02",
 	}
 
+	expected, err := json.Marshal(gin.H{
+		"bookId": book.ID,
+	})
+	assert.NoError(t, err)
+	body, err := json.Marshal(book)
+	assert.NoError(t, err)
 	uc := new(usecase.BookUseCaseMock)
 	r := gin.Default()
 	RegisterEndpoints(r, uc)
 
-	body, err := json.Marshal(testBook)
-	assert.NoError(t, err)
-
-	var check bytes.Buffer
-
-	json.Unmarshal([]byte(`{"bookId":1}`), &check)
-
-	uc.On("AddBooks", testBook).Return(testBook.ID, nil)
+	uc.On("AddBooks", book).Return(book.ID, nil)
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("POST", "/books", bytes.NewBuffer(body))
+	req, _ := http.NewRequest("POST", "/books/", bytes.NewBuffer(body))
 	r.ServeHTTP(w, req)
-	assert.Equal(t, &check, w.Body)
+	actual := w.Body.Bytes()
+	assert.Equal(t, string(expected), string(actual))
 }
 
 func TestHandler_GetBooks(t *testing.T) {
