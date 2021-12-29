@@ -76,8 +76,9 @@ func NewApp() *App {
 func (a *App) Run() error {
 
 	router := gin.Default()
+	api := router.Group("/api")
 
-	bookHTTP.RegisterEndpoints(router, a.bookUC)
+	bookHTTP.RegisterEndpoints(api, a.bookUC)
 
 	router.Use(middleware.CORS())
 	router.Use(middleware.Logging())

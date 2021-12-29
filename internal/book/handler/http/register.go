@@ -5,7 +5,7 @@ import (
 	"go-tech-task/internal/domain"
 )
 
-func RegisterEndpoints(router *gin.Engine, useCase domain.BookUseCase) {
+func RegisterEndpoints(router *gin.RouterGroup, useCase domain.BookUseCase) {
 	h := NewHandler(useCase)
 	books := router.Group("/books")
 	{
