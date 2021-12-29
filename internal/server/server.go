@@ -1,7 +1,6 @@
 package server
 
 import (
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	log "github.com/sirupsen/logrus"
@@ -80,13 +79,7 @@ func (a *App) Run() error {
 
 	bookHTTP.RegisterEndpoints(router, a.bookUC)
 
-	router.Use(cors.New(cors.Config{
-		AllowOrigins: []string{"*"},
-		AllowMethods: []string{"GET", "POST", "DELETE", "PUT"},
-		AllowHeaders: []string{"Origin"},
-		MaxAge:       12 * time.Hour,
-	}))
-
+	router.Use(middleware.CORS())
 	router.Use(middleware.Logging())
 
 	a.server = &http.Server{
