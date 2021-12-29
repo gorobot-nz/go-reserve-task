@@ -34,7 +34,7 @@ func TestHandler_AddBooks(t *testing.T) {
 	uc.On("AddBooks", book).Return(book.ID, nil)
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("POST", "/books/", bytes.NewBuffer(body))
+	req, _ := http.NewRequest("POST", "/books", bytes.NewBuffer(body))
 	r.ServeHTTP(w, req)
 	actual := w.Body.Bytes()
 	assert.Equal(t, string(expected), string(actual))
@@ -66,7 +66,7 @@ func TestHandler_GetBooks(t *testing.T) {
 	uc.On("GetBooks").Return(books, nil)
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/books/", nil)
+	req, _ := http.NewRequest("GET", "/books", nil)
 	r.ServeHTTP(w, req)
 	actual := w.Body.Bytes()
 	assert.JSONEq(t, string(expected), string(actual))

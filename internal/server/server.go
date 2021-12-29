@@ -6,6 +6,7 @@ import (
 	"github.com/joho/godotenv"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
+	"go-tech-task/pkg/middleware"
 
 	bookHTTP "go-tech-task/internal/book/handler/http"
 	"go-tech-task/internal/book/repository/postgres"
@@ -85,6 +86,8 @@ func (a *App) Run() error {
 		AllowHeaders: []string{"Origin"},
 		MaxAge:       12 * time.Hour,
 	}))
+
+	router.Use(middleware.Logging())
 
 	a.server = &http.Server{
 		Addr:           ":" + viper.GetString("port"),
