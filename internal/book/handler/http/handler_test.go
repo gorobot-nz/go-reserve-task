@@ -72,7 +72,26 @@ func TestHandler_GetBooks(t *testing.T) {
 }
 
 func TestHandler_GetBookById(t *testing.T) {
+	book := &domain.Book{
+		ID:      1,
+		Title:   "Check",
+		Authors: pq.StringArray{"Brother Koen", "Another Brother Koen"},
+		Year:    "1999-07-25T00:00:00Z",
+	}
+	expected, err := json.Marshal(gin.H{
+		"book": *book,
+	})
+	assert.NoError(t, err)
+	uc := new(usecase.BookUseCaseMock)
+	r := gin.Default()
+	RegisterEndpoints(r, uc)
+	uc.On("GetBookById", book.ID).Return(book, nil)
 
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/books/1", nil)
+	r.ServeHTTP(w, req)
+	actual := w.Body.Bytes()
+	assert.JSONEq(t, string(expected), string(actual))
 }
 
 func TestHandler_DeleteBook(t *testing.T) {
