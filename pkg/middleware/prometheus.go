@@ -19,8 +19,9 @@ func NewPrometheusMiddleware(sName string) *PrometheusMiddleware {
 		Help: "The total number of processed events",
 	}, []string{"method", "path", "statuscode"})
 	requestDuration := promauto.NewHistogramVec(prometheus.HistogramOpts{
-		Name: "hyst_creator",
-		Help: "Hystogram data",
+		Name:    "hyst_creator",
+		Help:    "Hystogram data",
+		Buckets: []float64{1, 2, 5, 10, 20, 60},
 	}, []string{})
 	return &PrometheusMiddleware{
 		serviceName:     sName,
