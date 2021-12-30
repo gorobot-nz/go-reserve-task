@@ -1,6 +1,11 @@
 package middleware
 
-import "github.com/prometheus/client_golang/prometheus"
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
+	"strconv"
+)
 
 type PrometheusMiddleware struct {
 	serviceName     string
@@ -8,6 +13,28 @@ type PrometheusMiddleware struct {
 	requestDuration *prometheus.HistogramVec
 }
 
-func NewPrometheusMiddleware() *PrometheusMiddleware {
-	return &PrometheusMiddleware{}
+func NewPrometheusMiddleware(sName string) *PrometheusMiddleware {
+	requestCount := promauto.NewCounterVec(prometheus.CounterOpts{
+		Name: "request_of_method",
+		Help: "The total number of processed events",
+	}, []string{"method", "path", "statuscode"})
+	requestDuration := promauto.NewHistogramVec(prometheus.HistogramOpts{
+		Name: "hyst_creator",
+		Help: "Hystogram data",
+	}, []string{})
+	return &PrometheusMiddleware{
+		serviceName:     sName,
+		requestCount:    requestCount,
+		requestDuration: requestDuration,
+	}
+}
+
+func (p *PrometheusMiddleware) Metrics() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		p.requestCount.With(prometheus.Labels{
+			"method":     c.HandlerName(),
+			"path":       c.Request.RequestURI,
+			"statuscode": strconv.Itoa(c.Writer.Status())}).Inc()
+		c.Next()
+	}
 }

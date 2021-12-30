@@ -3,6 +3,7 @@ package server
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"go-tech-task/pkg/middleware"
@@ -76,10 +77,17 @@ func NewApp() *App {
 func (a *App) Run() error {
 
 	router := gin.Default()
+	router.GET("/metrics", func(c *gin.Context) {
+		handler := promhttp.Handler()
+		handler.ServeHTTP(c.Writer, c.Request)
+	})
 	api := router.Group("/api")
 
 	bookHTTP.RegisterEndpoints(api, a.bookUC)
 
+	metricsMw := middleware.NewPrometheusMiddleware("books")
+
+	router.Use(metricsMw.Metrics())
 	router.Use(middleware.CORS())
 	router.Use(middleware.Logging())
 
