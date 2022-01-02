@@ -41,6 +41,11 @@ func checkEnvVars() {
 	}
 }
 
+func logInit() {
+	logger := log.New()
+	logger.SetFormatter(&log.JSONFormatter{})
+}
+
 type App struct {
 	server *http.Server
 
@@ -48,6 +53,7 @@ type App struct {
 }
 
 func NewApp() *App {
+	logInit()
 	if err := InitConfig(); err != nil {
 		log.Fatalf("Config error: %s", err.Error())
 	}
