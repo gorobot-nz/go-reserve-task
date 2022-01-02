@@ -6,9 +6,9 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
+	bookHTTP "go-tech-task/internal/book/handler/http"
 	"go-tech-task/pkg/middleware"
 
-	bookHTTP "go-tech-task/internal/book/handler/http"
 	"go-tech-task/internal/book/repository/postgres"
 	bookUseCase "go-tech-task/internal/book/usecase"
 	"go-tech-task/internal/domain"
@@ -81,22 +81,21 @@ func NewApp() *App {
 }
 
 func (a *App) Run() error {
-
-	router := gin.Default()
+	gin.SetMode(gin.ReleaseMode)
+	router := gin.New()
 	router.GET("/metrics", func(c *gin.Context) {
 		handler := promhttp.Handler()
 		handler.ServeHTTP(c.Writer, c.Request)
 	})
-	api := router.Group("/api")
-
-	bookHTTP.RegisterEndpoints(api, a.bookUC)
 
 	metricsMw := middleware.NewPrometheusMiddleware("books")
 
-	router.Use(metricsMw.Metrics())
-	router.Use(middleware.CORS())
-	router.Use(middleware.Logging())
+	api := router.Group("/api")
+	api.Use(metricsMw.Metrics())
+	api.Use(middleware.CORS())
+	api.Use(middleware.Logging())
 
+	bookHTTP.RegisterEndpoints(api, a.bookUC)
 	a.server = &http.Server{
 		Addr:           ":" + viper.GetString("port"),
 		Handler:        router,
