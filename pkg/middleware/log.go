@@ -7,6 +7,7 @@ import (
 
 func Logging() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		log.Infof("New request %s", c.Request.URL)
 		c.Next()
 		log.Infof("| %3d | %s | %s |",
 			c.Writer.Status(),
