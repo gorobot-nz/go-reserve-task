@@ -24,7 +24,7 @@ func NewPrometheusMiddleware(sName string) *PrometheusMiddleware {
 	requestCount := promauto.NewCounterVec(prometheus.CounterOpts{
 		Name: "reserve_task",
 		Help: "The total number of processed events",
-	}, []string{"method", "path", "status_code, date"})
+	}, []string{"method", "path", "status_code", "date"})
 	requestDuration := promauto.NewHistogramVec(prometheus.HistogramOpts{
 		Name:    "hist_creator",
 		Help:    "Histogram data",
