@@ -3,6 +3,7 @@ package server
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
@@ -89,6 +90,7 @@ func (a *App) Run() error {
 	})
 
 	metricsMw := middleware.NewPrometheusMiddleware("books")
+	prometheus.MustRegister(middleware.BOOK_RESERVED)
 
 	api := router.Group("/api")
 	api.Use(metricsMw.Metrics())

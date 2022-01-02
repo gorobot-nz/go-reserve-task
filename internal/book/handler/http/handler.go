@@ -2,7 +2,9 @@ package http
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/prometheus/client_golang/prometheus"
 	"go-tech-task/internal/domain"
+	"go-tech-task/pkg/middleware"
 
 	"net/http"
 	"strconv"
@@ -41,6 +43,11 @@ func (h *Handler) GetBookById(context *gin.Context) {
 		})
 		return
 	}
+
+	middleware.BOOK_RESERVED.With(prometheus.Labels{
+		"book_id":     strconv.FormatInt(b.ID, 10),
+		"status_code": string(rune(http.StatusOK)),
+	}).Inc()
 
 	context.JSON(http.StatusOK, map[string]interface{}{
 		"book": &b,

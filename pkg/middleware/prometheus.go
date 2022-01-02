@@ -14,6 +14,11 @@ type PrometheusMiddleware struct {
 	requestDuration *prometheus.HistogramVec
 }
 
+var BOOK_RESERVED = promauto.NewCounterVec(prometheus.CounterOpts{
+	Name: "count_of_books_reserved",
+	Help: "The total number of processed events",
+}, []string{"book_id", "status_code"})
+
 func NewPrometheusMiddleware(sName string) *PrometheusMiddleware {
 	requestCount := promauto.NewCounterVec(prometheus.CounterOpts{
 		Name: "reserve_task",
