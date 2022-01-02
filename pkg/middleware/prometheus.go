@@ -24,7 +24,7 @@ func NewPrometheusMiddleware(sName string) *PrometheusMiddleware {
 	requestCount := promauto.NewCounterVec(prometheus.CounterOpts{
 		Name: "reserve_task",
 		Help: "The total number of processed events",
-	}, []string{"method", "path", "status_code"})
+	}, []string{"method", "path", "status_code, date"})
 	requestDuration := promauto.NewHistogramVec(prometheus.HistogramOpts{
 		Name:    "hist_creator",
 		Help:    "Histogram data",
@@ -44,7 +44,8 @@ func (p *PrometheusMiddleware) Metrics() gin.HandlerFunc {
 		go p.requestCount.With(prometheus.Labels{
 			"method":      c.Request.Method,
 			"path":        c.Request.RequestURI,
-			"status_code": strconv.Itoa(c.Writer.Status())}).Inc()
+			"status_code": strconv.Itoa(c.Writer.Status()),
+			"date":        time.Now().Format("01-02-2006")}).Inc()
 		go p.requestDuration.With(prometheus.Labels{
 			"method":      c.Request.Method,
 			"path":        c.Request.URL.Path,
