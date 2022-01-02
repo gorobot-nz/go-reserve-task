@@ -6,12 +6,12 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
-	bookHTTP "go-tech-task/internal/book/handler/http"
-	"go-tech-task/pkg/middleware"
 
+	bookHTTP "go-tech-task/internal/book/handler/http"
 	"go-tech-task/internal/book/repository/postgres"
 	bookUseCase "go-tech-task/internal/book/usecase"
 	"go-tech-task/internal/domain"
+	"go-tech-task/pkg/middleware"
 
 	"context"
 	"net/http"

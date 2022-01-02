@@ -1,9 +1,11 @@
 package mock
 
 import (
-	"context"
 	"github.com/stretchr/testify/mock"
+
 	"go-tech-task/internal/domain"
+
+	"context"
 )
 
 type BooksPostgresStorageMock struct {

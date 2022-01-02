@@ -1,9 +1,11 @@
 package usecase
 
 import (
-	"context"
 	"github.com/stretchr/testify/mock"
+
 	"go-tech-task/internal/domain"
+
+	"context"
 )
 
 type BookUseCaseMock struct {

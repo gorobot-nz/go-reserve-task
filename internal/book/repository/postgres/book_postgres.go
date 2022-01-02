@@ -1,12 +1,14 @@
 package postgres
 
 import (
+	"github.com/jmoiron/sqlx"
+	log "github.com/sirupsen/logrus"
+
+	"go-tech-task/internal/domain"
+
 	"context"
 	"errors"
 	"fmt"
-	"github.com/jmoiron/sqlx"
-	log "github.com/sirupsen/logrus"
-	"go-tech-task/internal/domain"
 	"io/ioutil"
 	"path/filepath"
 	"time"

@@ -1,8 +1,9 @@
 package domain
 
 import (
-	"context"
 	"github.com/lib/pq"
+
+	"context"
 )
 
 type Book struct {

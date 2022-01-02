@@ -1,8 +1,9 @@
 package usecase
 
 import (
-	"context"
 	"go-tech-task/internal/domain"
+
+	"context"
 )
 
 type BookUseCase struct {

@@ -1,11 +1,13 @@
 package usecase
 
 import (
-	"context"
 	"github.com/lib/pq"
 	"github.com/stretchr/testify/assert"
+
 	"go-tech-task/internal/book/repository/mock"
 	"go-tech-task/internal/domain"
+
+	"context"
 	"testing"
 )
 
