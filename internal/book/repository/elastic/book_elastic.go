@@ -36,11 +36,29 @@ const mapping = `
 	}
 }`
 
+const hostDb = "http://127.0.0.1:9200"
+
 func NewBooksElasticStorage() *BooksElasticStorage {
+	ctx := context.Background()
 	client, err := elastic.NewClient()
 	if err != nil {
 		logrus.Fatalf("Error elastic client: %+v", err)
 	}
+
+	exists, err := client.IndexExists("Books").Do(ctx)
+	if err != nil {
+		logrus.Fatalf("Books index check error: %+v", err)
+	}
+	if !exists {
+		createIndex, err := client.CreateIndex("Books").BodyString(mapping).Do(ctx)
+		if err != nil {
+			logrus.Fatalf("Books index creating error: %+v", err)
+		}
+		if !createIndex.Acknowledged {
+			// Not acknowledged
+		}
+	}
+
 	return &BooksElasticStorage{client}
 }
 
