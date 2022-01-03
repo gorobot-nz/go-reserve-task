@@ -1,6 +1,7 @@
 package elastic
 
 import (
+	"fmt"
 	"github.com/olivere/elastic"
 	"github.com/sirupsen/logrus"
 
@@ -44,6 +45,12 @@ func NewBooksElasticStorage() *BooksElasticStorage {
 	if err != nil {
 		logrus.Fatalf("Error elastic client: %+v", err)
 	}
+
+	info, code, err := client.Ping(hostDb).Do(ctx)
+	if err != nil {
+		logrus.Fatalf("Error ping: %+v", err)
+	}
+	fmt.Printf("Elasticsearch returned with code %d and version %s\n", code, info.Version.Number)
 
 	exists, err := client.IndexExists("Books").Do(ctx)
 	if err != nil {
