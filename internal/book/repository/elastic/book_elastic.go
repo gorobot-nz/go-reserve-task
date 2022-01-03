@@ -13,6 +13,29 @@ type BooksElasticStorage struct {
 	client *elastic.Client
 }
 
+const mapping = `
+{
+	"settings":{
+		"number_of_shards": 1,
+		"number_of_replicas": 0
+	},
+	"mappings":{
+		"book":{
+			"properties":{
+				"authors":{
+					"type":"text"
+				},
+				"title":{
+					"type":"keyword"
+				},
+				"year":{
+					"type":"date"
+				},
+			}
+		}
+	}
+}`
+
 func NewBooksElasticStorage() *BooksElasticStorage {
 	client, err := elastic.NewClient()
 	if err != nil {
