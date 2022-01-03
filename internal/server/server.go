@@ -1,9 +1,9 @@
 package server
 
 import (
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 
@@ -11,6 +11,7 @@ import (
 	"go-tech-task/internal/book/repository/postgres"
 	bookUseCase "go-tech-task/internal/book/usecase"
 	"go-tech-task/internal/domain"
+	"go-tech-task/pkg/middleware"
 
 	"context"
 	"net/http"
@@ -40,6 +41,11 @@ func checkEnvVars() {
 	}
 }
 
+func logInit() {
+	logger := log.New()
+	logger.SetFormatter(&log.JSONFormatter{})
+}
+
 type App struct {
 	server *http.Server
 
@@ -47,6 +53,7 @@ type App struct {
 }
 
 func NewApp() *App {
+	logInit()
 	if err := InitConfig(); err != nil {
 		log.Fatalf("Config error: %s", err.Error())
 	}
@@ -74,18 +81,21 @@ func NewApp() *App {
 }
 
 func (a *App) Run() error {
+	gin.SetMode(gin.ReleaseMode)
+	router := gin.New()
+	router.GET("/metrics", func(c *gin.Context) {
+		handler := promhttp.Handler()
+		handler.ServeHTTP(c.Writer, c.Request)
+	})
 
-	router := gin.Default()
+	metricsMw := middleware.NewPrometheusMiddleware("books")
 
-	bookHTTP.RegisterEndpoints(router, a.bookUC)
+	api := router.Group("/api")
+	api.Use(metricsMw.Metrics())
+	api.Use(middleware.CORS())
+	api.Use(middleware.Logging())
 
-	router.Use(cors.New(cors.Config{
-		AllowOrigins: []string{"*"},
-		AllowMethods: []string{"GET", "POST", "DELETE", "PUT"},
-		AllowHeaders: []string{"Origin"},
-		MaxAge:       12 * time.Hour,
-	}))
-
+	bookHTTP.RegisterEndpoints(api, a.bookUC)
 	a.server = &http.Server{
 		Addr:           ":" + viper.GetString("port"),
 		Handler:        router,

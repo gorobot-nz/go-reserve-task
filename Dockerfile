@@ -14,6 +14,7 @@ WORKDIR ${APP_PATH}
 COPY --from=0 ${APP_PATH}/app ${APP_PATH}/app
 COPY --from=0 ${APP_PATH}/wait-for-postgres.sh ${APP_PATH}/wait-for-postgres.sh
 COPY --from=0 ${APP_PATH}/configs/config.yml ${APP_PATH}/configs/config.yml
+COPY --from=0 ${APP_PATH}/prometheus ${APP_PATH}/prometheus
 COPY --from=0 ${APP_PATH}/.env ${APP_PATH}/.env
 COPY --from=0 ${APP_PATH}/internal/schema/book.sql ${APP_PATH}/internal/schema/book.sql
 RUN chmod +x ${APP_PATH}/wait-for-postgres.sh

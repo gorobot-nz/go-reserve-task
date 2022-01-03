@@ -1,6 +1,18 @@
 version: '3.8'
 
 services:
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus:/etc/prometheus/
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    ports:
+      - 127.0.0.1:9090:9090
+    depends_on:
+      - go-tech-task
+
   go-tech-task:
     build: ./
     #---------------------------------------------------------------------------
@@ -20,3 +32,10 @@ services:
       - POSTGRES_PASSWORD=qwerty
     ports:
       - 127.0.0.1:5432:5432
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - 127.0.0.1:3000:3000
+    depends_on:
+      - prometheus
