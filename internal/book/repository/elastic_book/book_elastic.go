@@ -120,7 +120,8 @@ func (b *BooksElasticStorage) AddBooks(ctx context.Context, book domain.Book) (i
 }
 
 func (b *BooksElasticStorage) DeleteBook(ctx context.Context, id int64) (int64, error) {
-	b.client.Delete()
+	//TODO implement me
+	panic("implement me")
 }
 
 func (b *BooksElasticStorage) UpdateBook(ctx context.Context, id int64, book domain.Book) (int64, error) {
