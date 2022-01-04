@@ -1,13 +1,12 @@
-package elastic
+package elastic_book
 
 import (
-	"fmt"
-	"github.com/olivere/elastic"
-	"github.com/sirupsen/logrus"
-
-	"go-tech-task/internal/domain"
-
 	"context"
+	"fmt"
+	"github.com/olivere/elastic/v7"
+	"github.com/sirupsen/logrus"
+	"go-tech-task/internal/domain"
+	"strconv"
 )
 
 type BooksElasticStorage struct {
@@ -27,7 +26,7 @@ const mapping = `
 					"type":"text"
 				},
 				"title":{
-					"type":"keyword"
+					"type":"text"
 				},
 				"year":{
 					"type":"date"
@@ -43,29 +42,43 @@ func NewBooksElasticStorage() *BooksElasticStorage {
 	ctx := context.Background()
 	client, err := elastic.NewClient()
 	if err != nil {
-		logrus.Fatalf("Error elastic client: %+v", err)
+		// Handle error
+		panic(err)
 	}
 
+	// Ping the Elasticsearch server to get e.g. the version number
 	info, code, err := client.Ping(hostDb).Do(ctx)
 	if err != nil {
-		logrus.Fatalf("Error ping: %+v", err)
+		// Handle error
+		panic(err)
 	}
 	fmt.Printf("Elasticsearch returned with code %d and version %s\n", code, info.Version.Number)
 
-	exists, err := client.IndexExists("Books").Do(ctx)
+	// Getting the ES version number is quite common, so there's a shortcut
+	esversion, err := client.ElasticsearchVersion(hostDb)
 	if err != nil {
-		logrus.Fatalf("Books index check error: %+v", err)
+		// Handle error
+		logrus.Fatalf("error %+v", err.Error())
+	}
+	fmt.Printf("Elasticsearch version %s\n", esversion)
+
+	// Use the IndexExists service to check if a specified index exists.
+	exists, err := client.IndexExists("books").Do(ctx)
+	if err != nil {
+		// Handle error
+		logrus.Fatalf("error %+v", err.Error())
 	}
 	if !exists {
-		createIndex, err := client.CreateIndex("Books").BodyString(mapping).Do(ctx)
+		// Create a new index.
+		createIndex, err := client.CreateIndex("books").BodyString(mapping).Do(ctx)
 		if err != nil {
-			logrus.Fatalf("Books index creating error: %+v", err)
+			// Handle error
+			logrus.Fatalf("error %+v", err.Error())
 		}
 		if !createIndex.Acknowledged {
 			// Not acknowledged
 		}
 	}
-
 	return &BooksElasticStorage{client}
 }
 
@@ -80,8 +93,17 @@ func (b *BooksElasticStorage) GetBookById(ctx context.Context, id int64) (*domai
 }
 
 func (b *BooksElasticStorage) AddBooks(ctx context.Context, book domain.Book) (int64, error) {
-	//TODO implement me
-	panic("implement me")
+	put1, err := b.client.Index().
+		Index("books").
+		Type("book").
+		Id(strconv.FormatInt(book.ID, 10)).
+		BodyJson(book).
+		Do(ctx)
+	if err != nil {
+		return 0, err
+	}
+	logrus.Infof("Indexed tweet %s to index %s, type %s\n", put1.Id, put1.Index, put1.Type)
+	return book.ID, nil
 }
 
 func (b *BooksElasticStorage) DeleteBook(ctx context.Context, id int64) (int64, error) {

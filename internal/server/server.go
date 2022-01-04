@@ -6,9 +6,9 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
+	"go-tech-task/internal/book/repository/elastic_book"
 
 	bookHTTP "go-tech-task/internal/book/handler/http"
-	"go-tech-task/internal/book/repository/postgres"
 	bookUseCase "go-tech-task/internal/book/usecase"
 	"go-tech-task/internal/domain"
 	"go-tech-task/pkg/middleware"
@@ -64,16 +64,16 @@ func NewApp() *App {
 
 	checkEnvVars()
 
-	config := postgres.Config{
+	/*config := postgres.Config{
 		Host:     os.Getenv("POSTGRES_HOST"),
 		Port:     viper.GetString("db.POSTGRES_DBPORT"),
 		Username: os.Getenv("POSTGRES_USER"),
 		Password: os.Getenv("POSTGRES_PASSWORD"),
 		DBName:   viper.GetString("db.POSTGRES_DBNAME"),
 		SSLMode:  viper.GetString("db.POSTGRES_SSLMODE"),
-	}
+	}*/
 
-	bookRepo := postgres.NewBooksPostgresStorage(config)
+	bookRepo := elastic_book.NewBooksElasticStorage()
 
 	return &App{
 		bookUC: bookUseCase.NewBookUseCase(bookRepo),
