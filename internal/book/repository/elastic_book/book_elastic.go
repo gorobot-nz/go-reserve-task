@@ -83,8 +83,14 @@ func NewBooksElasticStorage() *BooksElasticStorage {
 }
 
 func (b *BooksElasticStorage) GetBooks(ctx context.Context) ([]domain.Book, error) {
-	//TODO implement me
-	panic("implement me")
+	_, err := b.client.Get().
+		Index("books").
+		Type("book").
+		Do(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return []domain.Book{}, nil
 }
 
 func (b *BooksElasticStorage) GetBookById(ctx context.Context, id int64) (*domain.Book, error) {
