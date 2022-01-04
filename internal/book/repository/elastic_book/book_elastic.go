@@ -88,8 +88,15 @@ func (b *BooksElasticStorage) GetBooks(ctx context.Context) ([]domain.Book, erro
 }
 
 func (b *BooksElasticStorage) GetBookById(ctx context.Context, id int64) (*domain.Book, error) {
-	//TODO implement me
-	panic("implement me")
+	_, err := b.client.Get().
+		Index("books").
+		Type("book").
+		Id(strconv.FormatInt(id, 10)).
+		Do(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return nil, nil
 }
 
 func (b *BooksElasticStorage) AddBooks(ctx context.Context, book domain.Book) (int64, error) {
@@ -107,8 +114,7 @@ func (b *BooksElasticStorage) AddBooks(ctx context.Context, book domain.Book) (i
 }
 
 func (b *BooksElasticStorage) DeleteBook(ctx context.Context, id int64) (int64, error) {
-	//TODO implement me
-	panic("implement me")
+	b.client.Delete()
 }
 
 func (b *BooksElasticStorage) UpdateBook(ctx context.Context, id int64, book domain.Book) (int64, error) {
