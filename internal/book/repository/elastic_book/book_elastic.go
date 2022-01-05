@@ -16,12 +16,10 @@ type BooksElasticStorage struct {
 const mapping = `
 {
 	"mappings": {
-		"book": {
-		  "properties": {
+		"properties": {
 			"authors": { "type": "keyword" },
 			"title": { "type": "text" },
-			"year": { "type": "date" }
-		  }
+			"year": { "type": "date" }	
 		}
   	},
 	"settings":{
@@ -65,6 +63,7 @@ func NewBooksElasticStorage() *BooksElasticStorage {
 	if !exists {
 		// Create a new index.
 		_, err := client.CreateIndex("books").BodyString(mapping).Do(ctx)
+		fmt.Println("Create")
 		if err != nil {
 			// Handle error
 			logrus.Fatalf("error %+v", err.Error())
@@ -76,7 +75,6 @@ func NewBooksElasticStorage() *BooksElasticStorage {
 func (b *BooksElasticStorage) GetBooks(ctx context.Context) ([]domain.Book, error) {
 	_, err := b.client.Get().
 		Index("books").
-		Type("book").
 		Do(ctx)
 	if err != nil {
 		return nil, err
@@ -87,7 +85,6 @@ func (b *BooksElasticStorage) GetBooks(ctx context.Context) ([]domain.Book, erro
 func (b *BooksElasticStorage) GetBookById(ctx context.Context, id int64) (*domain.Book, error) {
 	_, err := b.client.Get().
 		Index("books").
-		Type("book").
 		Id(strconv.FormatInt(id, 10)).
 		Do(ctx)
 	if err != nil {
@@ -99,8 +96,6 @@ func (b *BooksElasticStorage) GetBookById(ctx context.Context, id int64) (*domai
 func (b *BooksElasticStorage) AddBooks(ctx context.Context, book domain.Book) (int64, error) {
 	put1, err := b.client.Index().
 		Index("books").
-		Type("book").
-		Id(strconv.FormatInt(book.ID, 10)).
 		BodyJson(book).
 		Do(ctx)
 	if err != nil {

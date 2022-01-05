@@ -9,7 +9,7 @@ import (
 type Book struct {
 	ID      int64          `json:"id" db:"id"`
 	Title   string         `json:"title" binding:"required" db:"title"`
-	Authors pq.StringArray `json:"authors" binding:"required" db:"authors"`
+	Authors pq.StringArray `json:"authors" db:"authors"`
 	Year    string         `json:"year" binding:"required" db:"book_year"`
 }
 
