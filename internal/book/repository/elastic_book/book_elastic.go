@@ -30,12 +30,6 @@ const mapping = `
 
 const hostDb = "http://127.0.0.1:9200"
 
-type ElasticBook struct {
-	Title   string   `json:"title"`
-	Authors []string `json:"authors"`
-	Year    string   `json:"year"`
-}
-
 func NewBooksElasticStorage() *BooksElasticStorage {
 	ctx := context.Background()
 	client, err := elastic.NewClient(elastic.SetBasicAuth("elastic", "chageme"))
