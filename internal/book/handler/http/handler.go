@@ -8,7 +8,6 @@ import (
 	"go-tech-task/pkg/middleware"
 
 	"net/http"
-	"strconv"
 )
 
 type Handler struct {
@@ -35,7 +34,7 @@ func (h *Handler) GetBooks(context *gin.Context) {
 }
 
 func (h *Handler) GetBookById(context *gin.Context) {
-	bookId, _ := strconv.ParseInt(context.Param("id"), 0, 64)
+	bookId := context.Param("id")
 	b, err := h.useCase.GetBookById(context.Request.Context(), bookId)
 
 	if err != nil {
@@ -46,7 +45,7 @@ func (h *Handler) GetBookById(context *gin.Context) {
 	}
 
 	middleware.BOOK_RESERVED.With(prometheus.Labels{
-		"book_id":     strconv.FormatInt(b.ID, 10),
+		"book_id":     bookId,
 		"status_code": string(rune(http.StatusOK)),
 	}).Inc()
 
@@ -80,7 +79,7 @@ func (h *Handler) AddBooks(context *gin.Context) {
 }
 
 func (h *Handler) DeleteBook(context *gin.Context) {
-	bookId, _ := strconv.ParseInt(context.Param("id"), 0, 64)
+	bookId := context.Param("id")
 	id, err := h.useCase.DeleteBook(context.Request.Context(), bookId)
 
 	if err != nil {
@@ -96,7 +95,7 @@ func (h *Handler) DeleteBook(context *gin.Context) {
 }
 
 func (h *Handler) UpdateBook(context *gin.Context) {
-	bookId, _ := strconv.ParseInt(context.Param("id"), 0, 64)
+	bookId := context.Param("id")
 
 	var b domain.Book
 

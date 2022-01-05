@@ -6,7 +6,6 @@ import (
 	"github.com/olivere/elastic/v7"
 	"github.com/sirupsen/logrus"
 	"go-tech-task/internal/domain"
-	"strconv"
 )
 
 type BooksElasticStorage struct {
@@ -82,10 +81,10 @@ func (b *BooksElasticStorage) GetBooks(ctx context.Context) ([]domain.Book, erro
 	return []domain.Book{}, nil
 }
 
-func (b *BooksElasticStorage) GetBookById(ctx context.Context, id int64) (*domain.Book, error) {
+func (b *BooksElasticStorage) GetBookById(ctx context.Context, id string) (*domain.Book, error) {
 	_, err := b.client.Get().
 		Index("books").
-		Id(strconv.FormatInt(id, 10)).
+		Id(id).
 		Do(ctx)
 	if err != nil {
 		return nil, err
@@ -93,24 +92,24 @@ func (b *BooksElasticStorage) GetBookById(ctx context.Context, id int64) (*domai
 	return nil, nil
 }
 
-func (b *BooksElasticStorage) AddBooks(ctx context.Context, book domain.Book) (int64, error) {
+func (b *BooksElasticStorage) AddBooks(ctx context.Context, book domain.Book) (string, error) {
 	put1, err := b.client.Index().
 		Index("books").
 		BodyJson(book).
 		Do(ctx)
 	if err != nil {
-		return 0, err
+		return "0", err
 	}
 	logrus.Infof("Indexed tweet %s to index %s, type %s\n", put1.Id, put1.Index, put1.Type)
 	return book.ID, nil
 }
 
-func (b *BooksElasticStorage) DeleteBook(ctx context.Context, id int64) (int64, error) {
+func (b *BooksElasticStorage) DeleteBook(ctx context.Context, id string) (string, error) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (b *BooksElasticStorage) UpdateBook(ctx context.Context, id int64, book domain.Book) (int64, error) {
+func (b *BooksElasticStorage) UpdateBook(ctx context.Context, id string, book domain.Book) (string, error) {
 	//TODO implement me
 	panic("implement me")
 }
