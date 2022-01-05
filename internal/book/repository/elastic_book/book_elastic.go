@@ -29,6 +29,12 @@ const mapping = `
 
 const hostDb = "http://127.0.0.1:9200"
 
+type ElasticBook struct {
+	Title   string   `json:"title" binding:"required" db:"title"`
+	Authors []string `json:"authors" db:"authors"`
+	Year    string   `json:"year" binding:"required" db:"book_year"`
+}
+
 func NewBooksElasticStorage() *BooksElasticStorage {
 	ctx := context.Background()
 	client, err := elastic.NewClient(elastic.SetBasicAuth("elastic", "chageme"))
@@ -95,13 +101,17 @@ func (b *BooksElasticStorage) GetBookById(ctx context.Context, id string) (*doma
 func (b *BooksElasticStorage) AddBooks(ctx context.Context, book domain.Book) (string, error) {
 	put1, err := b.client.Index().
 		Index("books").
-		BodyJson(book).
+		BodyJson(ElasticBook{
+			Year:    book.Year,
+			Authors: book.Authors,
+			Title:   book.Title,
+		}).
 		Do(ctx)
 	if err != nil {
 		return "0", err
 	}
 	logrus.Infof("Indexed tweet %s to index %s, type %s\n", put1.Id, put1.Index, put1.Type)
-	return book.ID, nil
+	return put1.Id, nil
 }
 
 func (b *BooksElasticStorage) DeleteBook(ctx context.Context, id string) (string, error) {
