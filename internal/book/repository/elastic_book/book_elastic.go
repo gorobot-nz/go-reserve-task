@@ -15,24 +15,18 @@ type BooksElasticStorage struct {
 
 const mapping = `
 {
+	"mappings": {
+		"book": {
+		  "properties": {
+			"authors": { "type": "keyword" },
+			"title": { "type": "text" },
+			"year": { "type": "date" }
+		  }
+		}
+  	}
 	"settings":{
 		"number_of_shards": 1,
 		"number_of_replicas": 0
-	},
-	"mappings":{
-		"book":{
-			"properties":{
-				"authors":{
-					"type":"text"
-				},
-				"title":{
-					"type":"text"
-				},
-				"year":{
-					"type":"date"
-				},
-			}
-		}
 	}
 }`
 
@@ -40,7 +34,7 @@ const hostDb = "http://127.0.0.1:9200"
 
 func NewBooksElasticStorage() *BooksElasticStorage {
 	ctx := context.Background()
-	client, err := elastic.NewClient()
+	client, err := elastic.NewClient(elastic.SetBasicAuth("elastic", "chageme"))
 	if err != nil {
 		// Handle error
 		panic(err)
@@ -65,18 +59,15 @@ func NewBooksElasticStorage() *BooksElasticStorage {
 	// Use the IndexExists service to check if a specified index exists.
 	exists, err := client.IndexExists("books").Do(ctx)
 	if err != nil {
-		// Handle error
 		logrus.Fatalf("error %+v", err.Error())
 	}
+
 	if !exists {
 		// Create a new index.
-		createIndex, err := client.CreateIndex("books").BodyString(mapping).Do(ctx)
+		_, err := client.CreateIndex("books").BodyString(mapping).Do(ctx)
 		if err != nil {
 			// Handle error
 			logrus.Fatalf("error %+v", err.Error())
-		}
-		if !createIndex.Acknowledged {
-			// Not acknowledged
 		}
 	}
 	return &BooksElasticStorage{client}
