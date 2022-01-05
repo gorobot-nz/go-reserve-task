@@ -147,6 +147,17 @@ func (b *BooksElasticStorage) DeleteBook(ctx context.Context, id string) (string
 }
 
 func (b *BooksElasticStorage) UpdateBook(ctx context.Context, id string, book domain.Book) (string, error) {
-	//TODO implement me
-	panic("implement me")
+	res, err := b.client.Update().
+		Index("books").
+		Id(id).
+		Doc(map[string]interface{}{
+			"title":   book.Title,
+			"authors": book.Authors,
+			"year":    book.Year,
+		}).
+		Do(ctx)
+	if err != nil {
+		return "0", err
+	}
+	return res.Id, nil
 }
