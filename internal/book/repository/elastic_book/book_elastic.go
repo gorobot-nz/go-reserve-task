@@ -100,8 +100,6 @@ func (b *BooksElasticStorage) GetBookById(ctx context.Context, id string) (*doma
 
 	for _, item := range result.Each(reflect.TypeOf(book)) {
 		t := item.(domain.Book)
-		fmt.Printf("%s, %s, %s", t.Year, t.Title, t.Authors)
-		book.ID = id
 		book.Year = t.Year
 		book.Title = t.Title
 		book.Authors = t.Authors
@@ -117,16 +115,11 @@ func (b *BooksElasticStorage) GetBookById(ctx context.Context, id string) (*doma
 func (b *BooksElasticStorage) AddBooks(ctx context.Context, book domain.Book) (string, error) {
 	put1, err := b.client.Index().
 		Index("books").
-		BodyJson(ElasticBook{
-			Year:    book.Year,
-			Authors: book.Authors,
-			Title:   book.Title,
-		}).
+		BodyJson(book).
 		Do(ctx)
 	if err != nil {
 		return "0", err
 	}
-	logrus.Infof("Indexed tweet %s to index %s, type %s\n", put1.Id, put1.Index, put1.Type)
 	return put1.Id, nil
 }
 
