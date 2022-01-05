@@ -6,6 +6,7 @@ import (
 	"github.com/olivere/elastic/v7"
 	"github.com/sirupsen/logrus"
 	"go-tech-task/internal/domain"
+	"reflect"
 )
 
 type BooksElasticStorage struct {
@@ -30,9 +31,9 @@ const mapping = `
 const hostDb = "http://127.0.0.1:9200"
 
 type ElasticBook struct {
-	Title   string   `json:"title" binding:"required" db:"title"`
-	Authors []string `json:"authors" db:"authors"`
-	Year    string   `json:"year" binding:"required" db:"book_year"`
+	Title   string   `json:"title"`
+	Authors []string `json:"authors"`
+	Year    string   `json:"year"`
 }
 
 func NewBooksElasticStorage() *BooksElasticStorage {
@@ -88,14 +89,29 @@ func (b *BooksElasticStorage) GetBooks(ctx context.Context) ([]domain.Book, erro
 }
 
 func (b *BooksElasticStorage) GetBookById(ctx context.Context, id string) (*domain.Book, error) {
-	_, err := b.client.Get().
+	termQuery := elastic.NewTermQuery("_id", id)
+
+	result, err := b.client.Search().
 		Index("books").
-		Id(id).
+		Query(termQuery).
 		Do(ctx)
+
+	var book domain.Book
+
+	for _, item := range result.Each(reflect.TypeOf(book)) {
+		t := item.(domain.Book)
+		fmt.Printf("%s, %s, %s", t.Year, t.Title, t.Authors)
+		book.ID = id
+		book.Year = t.Year
+		book.Title = t.Title
+		book.Authors = t.Authors
+	}
+
 	if err != nil {
 		return nil, err
 	}
-	return nil, nil
+
+	return &book, nil
 }
 
 func (b *BooksElasticStorage) AddBooks(ctx context.Context, book domain.Book) (string, error) {
