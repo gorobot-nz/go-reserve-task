@@ -79,13 +79,27 @@ func NewBooksElasticStorage() *BooksElasticStorage {
 }
 
 func (b *BooksElasticStorage) GetBooks(ctx context.Context) ([]domain.Book, error) {
-	_, err := b.client.Get().
+
+	result, err := b.client.Search().
 		Index("books").
 		Do(ctx)
+
+	var book domain.Book
+	var books []domain.Book
+
+	for _, item := range result.Each(reflect.TypeOf(book)) {
+		t := item.(domain.Book)
+		book.Year = t.Year
+		book.Title = t.Title
+		book.Authors = t.Authors
+		books = append(books, book)
+	}
+
 	if err != nil {
 		return nil, err
 	}
-	return []domain.Book{}, nil
+
+	return books, nil
 }
 
 func (b *BooksElasticStorage) GetBookById(ctx context.Context, id string) (*domain.Book, error) {
