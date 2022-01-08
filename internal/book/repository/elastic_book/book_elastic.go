@@ -17,14 +17,40 @@ const mapping = `
 {
 	"mappings": {
 		"properties": {
-			"authors": { "type": "keyword" },
-			"title": { "type": "text" },
-			"year": { "type": "date" }	
+			"authors": { 
+				"type": "keyword" 
+			},
+			"title": { 
+				"type": "text",
+				"analyzer": "custom_analyzer"
+			},
+			"year": { 
+				"type": "date" 
+			}	
 		}
   	},
 	"settings":{
 		"number_of_shards": 1,
-		"number_of_replicas": 0
+		"number_of_replicas": 0,
+		"analysis": {
+			"analyzer": {
+				"custom_analyzer": {
+					"tokenizer": "standard",
+					"char_filter": [
+						"rus_eng_char_filter"
+					]
+				}
+			},
+			"char_filter": {
+				"rus_eng_char_filter": {
+					"type": "mapping",
+					"mappings": [
+						":) => _happy_",
+						":( => _sad_"
+					]
+				}
+			}
+		}
 	}
 }`
 
@@ -74,8 +100,12 @@ func NewBooksElasticStorage() *BooksElasticStorage {
 
 func (b *BooksElasticStorage) GetBooks(ctx context.Context, title string) ([]domain.Book, error) {
 
+	searchSource := elastic.NewSearchSource()
+	searchSource.Query(elastic.NewMatchQuery("title", title))
+
 	result, err := b.client.Search().
 		Index("books").
+		SearchSource(searchSource).
 		Do(ctx)
 
 	var book domain.Book
