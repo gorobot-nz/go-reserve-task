@@ -72,7 +72,7 @@ func NewBooksElasticStorage() *BooksElasticStorage {
 	return &BooksElasticStorage{client}
 }
 
-func (b *BooksElasticStorage) GetBooks(ctx context.Context) ([]domain.Book, error) {
+func (b *BooksElasticStorage) GetBooks(ctx context.Context, title string) ([]domain.Book, error) {
 
 	result, err := b.client.Search().
 		Index("books").

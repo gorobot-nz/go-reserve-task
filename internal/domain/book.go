@@ -11,7 +11,7 @@ type Book struct {
 }
 
 type BookRepository interface {
-	GetBooks(ctx context.Context) ([]Book, error)
+	GetBooks(ctx context.Context, title string) ([]Book, error)
 	GetBookById(ctx context.Context, id string) (*Book, error)
 	AddBooks(ctx context.Context, book Book) (string, error)
 	DeleteBook(ctx context.Context, id string) (string, error)
@@ -19,7 +19,7 @@ type BookRepository interface {
 }
 
 type BookUseCase interface {
-	GetBooks(ctx context.Context) ([]Book, error)
+	GetBooks(ctx context.Context, title string) ([]Book, error)
 	GetBookById(ctx context.Context, id string) (*Book, error)
 	AddBooks(ctx context.Context, book Book) (string, error)
 	DeleteBook(ctx context.Context, id string) (string, error)

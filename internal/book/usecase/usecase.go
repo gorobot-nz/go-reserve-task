@@ -14,8 +14,8 @@ func NewBookUseCase(bookRepo domain.BookRepository) *BookUseCase {
 	return &BookUseCase{repository: bookRepo}
 }
 
-func (b *BookUseCase) GetBooks(ctx context.Context) ([]domain.Book, error) {
-	return b.repository.GetBooks(ctx)
+func (b *BookUseCase) GetBooks(ctx context.Context, title string) ([]domain.Book, error) {
+	return b.repository.GetBooks(ctx, title)
 }
 
 func (b *BookUseCase) GetBookById(ctx context.Context, id string) (*domain.Book, error) {

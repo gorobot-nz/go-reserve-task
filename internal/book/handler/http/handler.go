@@ -19,7 +19,8 @@ func NewHandler(useCase domain.BookUseCase) *Handler {
 }
 
 func (h *Handler) GetBooks(context *gin.Context) {
-	books, err := h.useCase.GetBooks(context.Request.Context())
+	title := context.DefaultQuery("title", "")
+	books, err := h.useCase.GetBooks(context.Request.Context(), title)
 
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, map[string]interface{}{
