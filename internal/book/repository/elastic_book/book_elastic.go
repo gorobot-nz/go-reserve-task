@@ -15,44 +15,128 @@ type BooksElasticStorage struct {
 
 const mapping = `
 {
-	"mappings": {
-		"properties": {
-			"authors": { 
-				"type": "keyword" 
-			},
-			"title": { 
-				"type": "text",
-				"analyzer": "custom_analyzer"
-			},
-			"year": { 
-				"type": "date" 
-			}	
-		}
-  	},
-	"settings":{
-		"number_of_shards": 1,
-		"number_of_replicas": 0,
-		"analysis": {
-			"analyzer": {
-				"custom_analyzer": {
-					"tokenizer": "standard",
-					"char_filter": [
-						"rus_eng_char_filter"
-					]
-				}
-			},
-			"char_filter": {
-				"rus_eng_char_filter": {
-					"type": "mapping",
-					"mappings": [
-						":) => _happy_",
-						":( => _sad_"
-					]
-				}
-			}
-		}
-	}
-}`
+    "settings": {
+        "index": {
+            "number_of_shards": 2,
+            "number_of_replicas": 1,
+            "analysis": {
+                "analyzer": {
+                    "custom_russian": {
+                        "type": "custom",
+                        "tokenizer": "standard",
+                        "char_filter": [
+                            "custom_to_russian"
+                        ],
+                        "filter": [
+                            "lowercase"
+                        ]
+                    },
+                    "custom_english": {
+                        "type": "custom",
+                        "tokenizer": "standard",
+                        "char_filter": [
+                            "custom_to_english"
+                        ],
+                        "filter": [
+                            "lowercase"
+                        ]
+                    }
+                },
+                "char_filter": {
+                    "custom_to_russian": {
+                        "type": "mapping",
+                        "mappings": [
+                            "A => А",
+                            "B => Б",
+                            "C => К",
+                            "D => Д",
+                            "E => Е",
+                            "F => Ф",
+                            "G => Г",
+                            "H => Х",
+                            "I => И",
+                            "J => ДЖ",
+                            "K => К",
+                            "L => Л",
+                            "M => М",
+                            "N => Н",
+                            "O => О",
+                            "P => П",
+                            "Q => К",
+                            "R => Р",
+                            "S => С",
+                            "T => Т",
+                            "U => Ю",
+                            "V => В",
+                            "W => В",
+                            "X => КС",
+                            "Y => АЙ",
+                            "Z => З"
+                        ]
+                    },
+                    "custom_to_english": {
+                        "type": "mapping",
+                        "mappings": [
+                            "А => A",
+                            "Б => B",
+                            "В => V",
+                            "Г => G",
+                            "Д => D",
+                            "Е => E",
+                            "Ё => YO",
+                            "Ж => ZH",
+                            "З => Z",
+                            "И => I",
+                            "К => K",
+                            "Л => L",
+                            "М => M",
+                            "Н => N",
+                            "О => O",
+                            "П => P",
+                            "Р => R",
+                            "С => S",
+                            "Т => T",
+                            "У => U",
+                            "Ф => F",
+                            "Х => H",
+                            "Ц => C",
+                            "Ч => CH",
+                            "Ш => SH",
+                            "Щ => SHCH",
+                            "Э => E",
+                            "Ю => U",
+                            "Я => YA"
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "mappings": {
+        "properties": {
+            "authors": {
+                "type": "keyword"
+            },
+            "title": {
+                "type": "text",
+                "fields": {
+                    "en": {
+                        "type": "text",
+                        "analyzer": "custom_english"
+                    },
+                    "ru": {
+                        "type": "text",
+                        "analyzer": "custom_russian"
+                    }
+                }
+            },
+            "year": {
+                "type": "date"
+            }
+        }
+    }
+}
+`
 
 const hostDb = "http://127.0.0.1:9200"
 
@@ -100,12 +184,13 @@ func NewBooksElasticStorage() *BooksElasticStorage {
 
 func (b *BooksElasticStorage) GetBooks(ctx context.Context, title string) ([]domain.Book, error) {
 
-	searchSource := elastic.NewSearchSource()
-	searchSource.Query(elastic.NewMatchQuery("title", title))
+	query := elastic.NewMultiMatchQuery(title, "title", "title.en", "title.ru").
+		Operator("and").
+		Fuzziness("AUTO")
 
 	result, err := b.client.Search().
 		Index("books").
-		SearchSource(searchSource).
+		Query(query).
 		Do(ctx)
 
 	var book domain.Book
