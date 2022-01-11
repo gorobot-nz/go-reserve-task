@@ -2,11 +2,13 @@ package elastic_book
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/olivere/elastic/v7"
 	"github.com/sirupsen/logrus"
 	"go-tech-task/internal/domain"
 	"reflect"
+	"time"
 )
 
 type BooksElasticStorage struct {
@@ -140,6 +142,8 @@ const mapping = `
 
 const hostDb = "http://127.0.0.1:9200"
 
+const layout = "2006-01-02"
+
 func NewBooksElasticStorage() *BooksElasticStorage {
 	ctx := context.Background()
 	client, err := elastic.NewClient(elastic.SetBasicAuth("elastic", "chageme"))
@@ -245,14 +249,26 @@ func (b *BooksElasticStorage) GetBookById(ctx context.Context, id string) (*doma
 }
 
 func (b *BooksElasticStorage) AddBooks(ctx context.Context, book domain.Book) (string, error) {
-	put1, err := b.client.Index().
+	_, err := time.Parse(layout, book.Year)
+
+	if err != nil {
+		return "", err
+	}
+
+	err = Validation(&book)
+
+	if err != nil {
+		return "", err
+	}
+
+	put, err := b.client.Index().
 		Index("books").
 		BodyJson(book).
 		Do(ctx)
 	if err != nil {
-		return "0", err
+		return "", err
 	}
-	return put1.Id, nil
+	return put.Id, nil
 }
 
 func (b *BooksElasticStorage) DeleteBook(ctx context.Context, id string) (string, error) {
@@ -265,6 +281,18 @@ func (b *BooksElasticStorage) DeleteBook(ctx context.Context, id string) (string
 }
 
 func (b *BooksElasticStorage) UpdateBook(ctx context.Context, id string, book domain.Book) (string, error) {
+	_, err := time.Parse(layout, book.Year)
+
+	if err != nil {
+		return "", err
+	}
+
+	err = Validation(&book)
+
+	if err != nil {
+		return "", err
+	}
+
 	res, err := b.client.Update().
 		Index("books").
 		Id(id).
@@ -275,7 +303,21 @@ func (b *BooksElasticStorage) UpdateBook(ctx context.Context, id string, book do
 		}).
 		Do(ctx)
 	if err != nil {
-		return "0", err
+		return "", err
 	}
 	return res.Id, nil
+}
+
+func Validation(book *domain.Book) error {
+	if len(book.Authors) == 0 {
+		return errors.New("Wrong author format")
+	}
+
+	for _, value := range book.Authors {
+		if value == "" {
+			return errors.New("Wrong author format")
+		}
+	}
+
+	return nil
 }
