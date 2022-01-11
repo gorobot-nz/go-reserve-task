@@ -188,10 +188,19 @@ func (b *BooksElasticStorage) GetBooks(ctx context.Context, title string) ([]dom
 		Operator("and").
 		Fuzziness("AUTO")
 
-	result, err := b.client.Search().
-		Index("books").
-		Query(query).
-		Do(ctx)
+	var result *elastic.SearchResult
+	var err error
+
+	if len(title) == 0 {
+		result, err = b.client.Search().
+			Index("books").
+			Do(ctx)
+	} else {
+		result, err = b.client.Search().
+			Index("books").
+			Query(query).
+			Do(ctx)
+	}
 
 	var book domain.Book
 	var books []domain.Book
