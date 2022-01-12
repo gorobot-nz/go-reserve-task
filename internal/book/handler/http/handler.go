@@ -85,6 +85,7 @@ func (h *Handler) GetBookById(context *gin.Context) {
 // @ID add-book
 // @Accept json
 // @Produce json
+// @Param input body domain.Book true "Book info"
 // @Success 200 {object} map[string]interface{}
 // @Success 400 {object} map[string]interface{}
 // @Router /api/books [post]
@@ -147,6 +148,7 @@ func (h *Handler) DeleteBook(context *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path string  true  "Book ID"
+// @Param input body domain.Book true "Book info"
 // @Success 200 {object} map[string]interface{}
 // @Success 400 {object} map[string]interface{}
 // @Router /api/books/{id} [put]

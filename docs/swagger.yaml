@@ -1,4 +1,16 @@
 basePath: /
+definitions:
+  domain.Book:
+    properties:
+      authors:
+        items:
+          type: string
+        type: array
+      title:
+        type: string
+      year:
+        type: string
+    type: object
 host: localhost:8000
 info:
   contact: {}
@@ -38,6 +50,13 @@ paths:
       - application/json
       description: add book
       operationId: add-book
+      parameters:
+      - description: Book info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Book'
       produces:
       - application/json
       responses:
@@ -120,6 +139,12 @@ paths:
         name: id
         required: true
         type: string
+      - description: Book info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Book'
       produces:
       - application/json
       responses:
