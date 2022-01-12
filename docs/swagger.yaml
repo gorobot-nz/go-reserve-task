@@ -1,0 +1,139 @@
+basePath: /
+host: localhost:8000
+info:
+  contact: {}
+  description: Simple API for Books store
+  title: Books API
+  version: "1.0"
+paths:
+  /api/books:
+    get:
+      consumes:
+      - application/json
+      description: gets all books or books by query param
+      operationId: get-books
+      parameters:
+      - description: search books by title
+        in: query
+        name: title
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get Books
+      tags:
+      - books
+    post:
+      consumes:
+      - application/json
+      description: add book
+      operationId: add-book
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Add Books
+      tags:
+      - books
+  /api/books/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete book
+      operationId: delete-book
+      parameters:
+      - description: Book ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete Book
+      tags:
+      - books
+    get:
+      consumes:
+      - application/json
+      description: gets book by id
+      operationId: get-books-by-id
+      parameters:
+      - description: Book ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get Books By ID
+      tags:
+      - books
+    put:
+      consumes:
+      - application/json
+      description: update book
+      operationId: update-book
+      parameters:
+      - description: Book ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Update Book
+      tags:
+      - books
+swagger: "2.0"
