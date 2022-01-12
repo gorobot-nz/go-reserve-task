@@ -45,6 +45,18 @@ func (h *Handler) GetBooks(context *gin.Context) {
 	})
 }
 
+// GetBookById
+// @Summary Get Books By ID
+// @Tags books
+// @Description gets book by id
+// @ID get-books-by-id
+// @Accept json
+// @Produce json
+// @Param id path string  true  "Book ID"
+// @Success 200 {object} domain.Book
+// @Success 400 {object} err.Error
+// @Success 500 {object} err.Error
+// @Router /api/books/{id} [get]
 func (h *Handler) GetBookById(context *gin.Context) {
 	bookId := context.Param("id")
 	b, err := h.useCase.GetBookById(context.Request.Context(), bookId)
