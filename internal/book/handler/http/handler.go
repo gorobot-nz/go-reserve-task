@@ -3,7 +3,6 @@ package http
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus"
-	"github.com/swaggo/swag/example/celler/httputil"
 
 	"go-tech-task/internal/domain"
 	"go-tech-task/pkg/middleware"
@@ -26,16 +25,18 @@ func NewHandler(useCase domain.BookUseCase) *Handler {
 // @ID get-books
 // @Accept json
 // @Produce json
-// @Param title query false "search books by title"
-// @Success 200 {array} domain.Book
-// @Failure 500 {object} httputil.HTTPError
+// @Param title query string false "search books by title"
+// @Success 200 {array} map[string]interface{}
+// @Success 500 {object} map[string]interface{}
 // @Router /api/books [get]
 func (h *Handler) GetBooks(context *gin.Context) {
 	title := context.Query("title")
 	books, err := h.useCase.GetBooks(context.Request.Context(), title)
 
 	if err != nil {
-		httputil.NewError(context, http.StatusInternalServerError, err)
+		context.JSON(http.StatusInternalServerError, map[string]interface{}{
+			"error": err.Error(),
+		})
 		return
 	}
 
@@ -52,15 +53,17 @@ func (h *Handler) GetBooks(context *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path string  true  "Book ID"
-// @Success 200 {object} domain.Book
-// @Failure 400 {object} httputil.HTTPError
+// @Success 200 {object} map[string]interface{}
+// @Success 400 {object} map[string]interface{}
 // @Router /api/books/{id} [get]
 func (h *Handler) GetBookById(context *gin.Context) {
 	bookId := context.Param("id")
 	b, err := h.useCase.GetBookById(context.Request.Context(), bookId)
 
 	if err != nil {
-		httputil.NewError(context, http.StatusBadRequest, err)
+		context.JSON(http.StatusBadRequest, map[string]interface{}{
+			"error": err.Error(),
+		})
 		return
 	}
 
@@ -81,21 +84,25 @@ func (h *Handler) GetBookById(context *gin.Context) {
 // @ID add-book
 // @Accept json
 // @Produce json
-// @Success 200 {string} string "id"
-// @Failure 400 {object} httputil.HTTPError
+// @Success 200 {string} map[string]interface{}
+// @Success 400 {object} map[string]interface{}
 // @Router /api/books [post]
 func (h *Handler) AddBooks(context *gin.Context) {
 	var b domain.Book
 
 	if err := context.BindJSON(&b); err != nil {
-		httputil.NewError(context, http.StatusBadRequest, err)
+		context.JSON(http.StatusBadRequest, map[string]interface{}{
+			"error": err.Error(),
+		})
 		return
 	}
 
 	id, err := h.useCase.AddBooks(context.Request.Context(), b)
 
 	if err != nil {
-		httputil.NewError(context, http.StatusBadRequest, err)
+		context.JSON(http.StatusBadRequest, map[string]interface{}{
+			"error": err.Error(),
+		})
 		return
 	}
 
@@ -112,15 +119,17 @@ func (h *Handler) AddBooks(context *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path string  true  "Book ID"
-// @Success 200 {string} string "id"
-// @Failure 400 {object} httputil.HTTPError
+// @Success 200 {string} map[string]interface{}
+// @Success 400 {object} map[string]interface{}
 // @Router /api/books/{id} [delete]
 func (h *Handler) DeleteBook(context *gin.Context) {
 	bookId := context.Param("id")
 	id, err := h.useCase.DeleteBook(context.Request.Context(), bookId)
 
 	if err != nil {
-		httputil.NewError(context, http.StatusBadRequest, err)
+		context.JSON(http.StatusBadRequest, map[string]interface{}{
+			"error": err.Error(),
+		})
 		return
 	}
 
@@ -137,8 +146,8 @@ func (h *Handler) DeleteBook(context *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path string  true  "Book ID"
-// @Success 200 {string} string "id"
-// @Failure 400 {object} httputil.HTTPError
+// @Success 200 {string} map[string]interface{}
+// @Success 400 {object} map[string]interface{}
 // @Router /api/books/{id} [put]
 func (h *Handler) UpdateBook(context *gin.Context) {
 	bookId := context.Param("id")
@@ -146,14 +155,18 @@ func (h *Handler) UpdateBook(context *gin.Context) {
 	var b domain.Book
 
 	if err := context.BindJSON(&b); err != nil {
-		httputil.NewError(context, http.StatusBadRequest, err)
+		context.JSON(http.StatusBadRequest, map[string]interface{}{
+			"error": err.Error(),
+		})
 		return
 	}
 
 	id, err := h.useCase.UpdateBook(context.Request.Context(), bookId, b)
 
 	if err != nil {
-		httputil.NewError(context, http.StatusBadRequest, err)
+		context.JSON(http.StatusBadRequest, map[string]interface{}{
+			"error": err.Error(),
+		})
 		return
 	}
 
