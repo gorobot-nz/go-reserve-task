@@ -78,6 +78,17 @@ func (h *Handler) GetBookById(context *gin.Context) {
 	})
 }
 
+// AddBooks
+// @Summary Add Books
+// @Tags books
+// @Description add book
+// @ID add-book
+// @Accept json
+// @Produce json
+// @Success 200 {string} string "id"
+// @Success 400 {object} err.Error
+// @Success 500 {object} err.Error
+// @Router /api/books [post]
 func (h *Handler) AddBooks(context *gin.Context) {
 	var b domain.Book
 
