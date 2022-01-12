@@ -26,7 +26,7 @@ func NewHandler(useCase domain.BookUseCase) *Handler {
 // @Accept json
 // @Produce json
 // @Param title query string false "search books by title"
-// @Success 200 {array} map[string]interface{}
+// @Success 200 {object} map[string]interface{}
 // @Success 500 {object} map[string]interface{}
 // @Router /api/books [get]
 func (h *Handler) GetBooks(context *gin.Context) {
@@ -84,7 +84,7 @@ func (h *Handler) GetBookById(context *gin.Context) {
 // @ID add-book
 // @Accept json
 // @Produce json
-// @Success 200 {string} map[string]interface{}
+// @Success 200 {object} map[string]interface{}
 // @Success 400 {object} map[string]interface{}
 // @Router /api/books [post]
 func (h *Handler) AddBooks(context *gin.Context) {
@@ -119,7 +119,7 @@ func (h *Handler) AddBooks(context *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path string  true  "Book ID"
-// @Success 200 {string} map[string]interface{}
+// @Success 200 {object} map[string]interface{}
 // @Success 400 {object} map[string]interface{}
 // @Router /api/books/{id} [delete]
 func (h *Handler) DeleteBook(context *gin.Context) {
@@ -146,7 +146,7 @@ func (h *Handler) DeleteBook(context *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path string  true  "Book ID"
-// @Success 200 {string} map[string]interface{}
+// @Success 200 {object} map[string]interface{}
 // @Success 400 {object} map[string]interface{}
 // @Router /api/books/{id} [put]
 func (h *Handler) UpdateBook(context *gin.Context) {
