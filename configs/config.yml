@@ -1,6 +1,3 @@
 port: "8000"
 
-db:
-  POSTGRES_DBNAME: "postgres"
-  POSTGRES_DBPORT: "5432"
-  POSTGRES_SSLMODE: "disable"
+index: "books"
