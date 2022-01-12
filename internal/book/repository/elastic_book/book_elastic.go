@@ -19,7 +19,8 @@ type Config struct {
 }
 
 type BooksElasticStorage struct {
-	client *elastic.Client
+	client    *elastic.Client
+	indexName string
 }
 
 const mapping = `
@@ -188,7 +189,7 @@ func NewBooksElasticStorage(cfg Config) *BooksElasticStorage {
 			logrus.Fatalf("error %+v", err.Error())
 		}
 	}
-	return &BooksElasticStorage{client}
+	return &BooksElasticStorage{client, cfg.Index}
 }
 
 func (b *BooksElasticStorage) GetBooks(ctx context.Context, title string) ([]domain.Book, error) {
@@ -202,11 +203,11 @@ func (b *BooksElasticStorage) GetBooks(ctx context.Context, title string) ([]dom
 
 	if len(title) == 0 {
 		result, err = b.client.Search().
-			Index("books").
+			Index(b.indexName).
 			Do(ctx)
 	} else {
 		result, err = b.client.Search().
-			Index("books").
+			Index(b.indexName).
 			Query(query).
 			Do(ctx)
 	}
@@ -233,7 +234,7 @@ func (b *BooksElasticStorage) GetBookById(ctx context.Context, id string) (*doma
 	termQuery := elastic.NewTermQuery("_id", id)
 
 	result, err := b.client.Search().
-		Index("books").
+		Index(b.indexName).
 		Query(termQuery).
 		Do(ctx)
 
@@ -267,7 +268,7 @@ func (b *BooksElasticStorage) AddBooks(ctx context.Context, book domain.Book) (s
 	}
 
 	put, err := b.client.Index().
-		Index("books").
+		Index(b.indexName).
 		BodyJson(book).
 		Do(ctx)
 	if err != nil {
@@ -277,7 +278,7 @@ func (b *BooksElasticStorage) AddBooks(ctx context.Context, book domain.Book) (s
 }
 
 func (b *BooksElasticStorage) DeleteBook(ctx context.Context, id string) (string, error) {
-	res, err := b.client.Delete().Index("books").
+	res, err := b.client.Delete().Index(b.indexName).
 		Id(id).Refresh("true").Do(ctx)
 	if err != nil {
 		return "0", err
@@ -299,7 +300,7 @@ func (b *BooksElasticStorage) UpdateBook(ctx context.Context, id string, book do
 	}
 
 	res, err := b.client.Update().
-		Index("books").
+		Index(b.indexName).
 		Id(id).
 		Doc(map[string]interface{}{
 			"title":   book.Title,
