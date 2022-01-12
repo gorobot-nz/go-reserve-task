@@ -27,7 +27,7 @@ func NewHandler(useCase domain.BookUseCase) *Handler {
 // @Produce json
 // @Param title query false "search books by title"
 // @Success 200 {array} domain.Book
-// @Success 500 {object} err.Error
+// @Failure 500 {object} err.Error
 // @Router /api/books [get]
 func (h *Handler) GetBooks(context *gin.Context) {
 	title := context.Query("title")
@@ -54,8 +54,8 @@ func (h *Handler) GetBooks(context *gin.Context) {
 // @Produce json
 // @Param id path string  true  "Book ID"
 // @Success 200 {object} domain.Book
-// @Success 400 {object} err.Error
-// @Success 500 {object} err.Error
+// @Failure 400 {object} err.Error
+// @Failure 500 {object} err.Error
 // @Router /api/books/{id} [get]
 func (h *Handler) GetBookById(context *gin.Context) {
 	bookId := context.Param("id")
@@ -86,8 +86,8 @@ func (h *Handler) GetBookById(context *gin.Context) {
 // @Accept json
 // @Produce json
 // @Success 200 {string} string "id"
-// @Success 400 {object} err.Error
-// @Success 500 {object} err.Error
+// @Failure 400 {object} err.Error
+// @Failure 500 {object} err.Error
 // @Router /api/books [post]
 func (h *Handler) AddBooks(context *gin.Context) {
 	var b domain.Book
@@ -122,8 +122,8 @@ func (h *Handler) AddBooks(context *gin.Context) {
 // @Produce json
 // @Param id path string  true  "Book ID"
 // @Success 200 {string} string "id"
-// @Success 400 {object} err.Error
-// @Success 500 {object} err.Error
+// @Failure 400 {object} err.Error
+// @Failure 500 {object} err.Error
 // @Router /api/books/{id} [delete]
 func (h *Handler) DeleteBook(context *gin.Context) {
 	bookId := context.Param("id")
@@ -150,8 +150,8 @@ func (h *Handler) DeleteBook(context *gin.Context) {
 // @Produce json
 // @Param id path string  true  "Book ID"
 // @Success 200 {string} string "id"
-// @Success 400 {object} err.Error
-// @Success 500 {object} err.Error
+// @Failure 400 {object} err.Error
+// @Failure 500 {object} err.Error
 // @Router /api/books/{id} [put]
 func (h *Handler) UpdateBook(context *gin.Context) {
 	bookId := context.Param("id")
