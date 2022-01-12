@@ -18,6 +18,17 @@ func NewHandler(useCase domain.BookUseCase) *Handler {
 	return &Handler{useCase: useCase}
 }
 
+// GetBooks
+// @Summary Get Books
+// @Tags books
+// @Description gets all books or books by query param
+// @ID get-books
+// @Accept json
+// @Produce json
+// @Param title query false "search books by title"
+// @Success 200 {array} domain.Book
+// @Success 500 {object} err.Error
+// @Router /api/books [get]
 func (h *Handler) GetBooks(context *gin.Context) {
 	title := context.Query("title")
 	books, err := h.useCase.GetBooks(context.Request.Context(), title)
