@@ -141,6 +141,18 @@ func (h *Handler) DeleteBook(context *gin.Context) {
 	})
 }
 
+// UpdateBook
+// @Summary Update Book
+// @Tags books
+// @Description update book
+// @ID update-book
+// @Accept json
+// @Produce json
+// @Param id path string  true  "Book ID"
+// @Success 200 {string} string "id"
+// @Success 400 {object} err.Error
+// @Success 500 {object} err.Error
+// @Router /api/books/{id} [put]
 func (h *Handler) UpdateBook(context *gin.Context) {
 	bookId := context.Param("id")
 
