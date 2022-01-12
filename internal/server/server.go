@@ -6,6 +6,8 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
+	"github.com/swaggo/files"
+	"github.com/swaggo/gin-swagger"
 	"go-tech-task/internal/book/repository/elastic_book"
 
 	bookHTTP "go-tech-task/internal/book/handler/http"
@@ -87,6 +89,7 @@ func (a *App) Run() error {
 		handler := promhttp.Handler()
 		handler.ServeHTTP(c.Writer, c.Request)
 	})
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	metricsMw := middleware.NewPrometheusMiddleware("books")
 
