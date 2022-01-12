@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus"
 
+	_ "go-tech-task/docs"
 	"go-tech-task/internal/domain"
 	"go-tech-task/pkg/middleware"
 

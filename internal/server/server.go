@@ -8,6 +8,9 @@ import (
 	"github.com/spf13/viper"
 	"github.com/swaggo/files"
 	"github.com/swaggo/gin-swagger"
+
+	_ "go-tech-task/docs"
+
 	"go-tech-task/internal/book/repository/elastic_book"
 
 	bookHTTP "go-tech-task/internal/book/handler/http"
