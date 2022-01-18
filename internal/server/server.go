@@ -6,9 +6,13 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
+	"github.com/swaggo/files"
+	"github.com/swaggo/gin-swagger"
+	_ "go-tech-task/docs"
+
+	"go-tech-task/internal/book/repository/elastic_book"
 
 	bookHTTP "go-tech-task/internal/book/handler/http"
-	"go-tech-task/internal/book/repository/postgres"
 	bookUseCase "go-tech-task/internal/book/usecase"
 	"go-tech-task/internal/domain"
 	"go-tech-task/pkg/middleware"
@@ -28,7 +32,7 @@ func InitConfig() error {
 }
 
 func checkEnvVars() {
-	requiredEnvs := []string{"POSTGRES_HOST", "POSTGRES_USER", "POSTGRES_PASSWORD"}
+	requiredEnvs := []string{"ELASTIC_HOST", "ELASTIC_USER", "ELASTIC_PASSWORD"}
 	var msg []string
 	for _, el := range requiredEnvs {
 		val, exists := os.LookupEnv(el)
@@ -64,16 +68,14 @@ func NewApp() *App {
 
 	checkEnvVars()
 
-	config := postgres.Config{
-		Host:     os.Getenv("POSTGRES_HOST"),
-		Port:     viper.GetString("db.POSTGRES_DBPORT"),
-		Username: os.Getenv("POSTGRES_USER"),
-		Password: os.Getenv("POSTGRES_PASSWORD"),
-		DBName:   viper.GetString("db.POSTGRES_DBNAME"),
-		SSLMode:  viper.GetString("db.POSTGRES_SSLMODE"),
+	config := elastic_book.Config{
+		Host:     os.Getenv("ELASTIC_HOST"),
+		Username: os.Getenv("ELASTIC_USER"),
+		Password: os.Getenv("ELASTIC_PASSWORD"),
+		Index:    viper.GetString("index"),
 	}
 
-	bookRepo := postgres.NewBooksPostgresStorage(config)
+	bookRepo := elastic_book.NewBooksElasticStorage(config)
 
 	return &App{
 		bookUC: bookUseCase.NewBookUseCase(bookRepo),
@@ -87,6 +89,7 @@ func (a *App) Run() error {
 		handler := promhttp.Handler()
 		handler.ServeHTTP(c.Writer, c.Request)
 	})
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	metricsMw := middleware.NewPrometheusMiddleware("books")
 

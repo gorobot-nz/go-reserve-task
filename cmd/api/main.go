@@ -6,6 +6,13 @@ import (
 	"go-tech-task/internal/server"
 )
 
+// @title Books API
+// @version 1.0
+// @description Simple API for Books store
+
+// @host localhost:8000
+// @BasePath /
+
 func main() {
 	log.SetFormatter(new(log.JSONFormatter))
 

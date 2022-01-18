@@ -1,41 +1,27 @@
-version: '3.8'
-
+version: "3"
 services:
-  prometheus:
-    image: prom/prometheus:latest
-    volumes:
-      - ./prometheus:/etc/prometheus/
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-    ports:
-      - 127.0.0.1:9090:9090
-    depends_on:
-      - go-tech-task
-
-  go-tech-task:
-    build: ./
-    #---------------------------------------------------------------------------
-    ports:
-      - 127.0.0.1:8000:8000
-    depends_on:
-      - db
+  elasticsearch:
+    image: elasticsearch:7.7.0
+    container_name: elasticsearch
+    hostname: elasticsearch
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=qwerty
-      - POSTGRES_HOST=db
-
-  db:
-    restart: always
-    image: postgres:latest
+      - discovery.type=single-node
+      - ELASTIC_USERNAME=elastic
+      - ELASTIC_PASSWORD=chageme
+      - xpack.security.enabled=true
+    ports:
+      - 127.0.0.1:9200:9200
+      - 127.0.0.1:9300:9300
+  kibana:
+    image: kibana:7.7.0
+    container_name: kibana
+    hostname: kibana
     environment:
-      - POSTGRES_PASSWORD=qwerty
+      - ELASTICSEARCH_USERNAME=elastic
+      - ELASTICSEARCH_PASSWORD=chageme
     ports:
-      - 127.0.0.1:5432:5432
-
-  grafana:
-    image: grafana/grafana:latest
-    ports:
-      - 127.0.0.1:3000:3000
+      - 127.0.0.1:5601:5601
+    links:
+      - elasticsearch:elasticsearch
     depends_on:
-      - prometheus
+      - elasticsearch
